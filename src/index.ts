@@ -10,20 +10,20 @@ import { EventEmitter } from 'events';
 @RpsModule("basic")
 export default class RPSBasic {
 
-  @rpsAction({defaultName:'as'})
+  @rpsAction({verbName:'as'})
   as (ctx:RpsContext,opts:{}, variable:string, value:any) : Promise<any>{
     ctx.variables[variable] = value;
     return Promise.resolve(value);
   }
 
-  @rpsAction({defaultName:'once'})
+  @rpsAction({verbName:'once'})
   once (ctx:RpsContext,opts:{}, event:EventEmitter, evtName:string) : Promise<any>{
     return new Promise(function(resolve) {
       event.once(evtName, (...params) => resolve(params));
     });
   }
 
-  @rpsAction({defaultName:'wait'})
+  @rpsAction({verbName:'wait'})
   wait (ctx:RpsContext,opts:{}, period:number) : Promise<any>{
     return new Promise(function(resolve) {
       setTimeout(function () {
