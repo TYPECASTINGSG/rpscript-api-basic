@@ -22,6 +22,11 @@ export default class RPSBasic {
       event.once(evtName, (...params) => resolve(params));
     });
   }
+  @rpsAction({verbName:'on'})
+  async on (ctx:RpsContext,opts:{}, event:EventEmitter, evtName:string, cb:(any)=>void) : Promise<EventEmitter>{
+    event.on(evtName, (...params) => cb(params));
+    return event;
+  }
 
   @rpsAction({verbName:'wait'})
   wait (ctx:RpsContext,opts:{}, period:number) : Promise<any>{
