@@ -13,6 +13,12 @@ m.describe('Basic', () => {
     await basic.as(context,{},"period",5);
 
     expect(context.variables['period']).to.be.equals(5);
+    expect(context.variables['$period']).to.be.equals(5);
+
+    await basic.as(context,{},"$val",'hello');
+
+    expect(context.variables['val']).to.be.equals('hello');
+    expect(context.variables['$val']).to.be.equals('hello');
 
     await basic.wait(context,{},2);
 
