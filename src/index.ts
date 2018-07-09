@@ -28,6 +28,11 @@ export default class RPSBasic {
     return event;
   }
 
+  @rpsAction({verbName:'data-type'})
+  async dataType (ctx:RpsContext,opts:{}, event:EventEmitter, item:any) : Promise<string>{
+    return typeof item;
+  }
+
   @rpsAction({verbName:'wait'})
   wait (ctx:RpsContext,opts:{}, period:number) : Promise<any>{
     return new Promise(function(resolve) {
