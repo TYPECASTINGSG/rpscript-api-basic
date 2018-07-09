@@ -29,8 +29,13 @@ export default class RPSBasic {
   }
 
   @rpsAction({verbName:'data-type'})
-  async dataType (ctx:RpsContext,opts:{}, event:EventEmitter, item:any) : Promise<string>{
-    return typeof item;
+  async dataType (ctx:RpsContext,opts:{}, item:any) : Promise<string>{
+    let type;
+    if(item instanceof Array) type = 'array';
+    else if(item instanceof Object) type = 'object';
+    else type = typeof item;
+    
+    return type;
   }
 
   @rpsAction({verbName:'wait'})
