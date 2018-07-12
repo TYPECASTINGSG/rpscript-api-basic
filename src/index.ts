@@ -12,11 +12,10 @@ export default class RPSBasic {
 
   @rpsAction({verbName:'as'})
   as (ctx:RpsContext,opts:{}, variable:string, value:any) : Promise<any>{
-    
+    variable = variable.trim();
     ctx.variables[variable] = value;
 
     if(variable.charAt(0)!=='$') variable = '$'+variable;
-    else variable = variable.replace('$','');
 
     ctx.variables[variable] = value;
 
