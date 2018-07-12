@@ -53,6 +53,17 @@ export default class RPSBasic {
     });
   }
 
+  @rpsAction({verbName:'get-element'})
+  async getElement (ctx:RpsContext,opts:{},items:any, ...position :any[]) : Promise<any>{
+    
+    let v = items;
+    for(var i=0;i<position.length;i++){
+      v = v[ position[i] ];
+      if(v===undefined)return undefined;
+    }
+    return v;
+  }
+
 
 
 }
