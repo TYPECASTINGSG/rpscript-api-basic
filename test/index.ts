@@ -60,4 +60,32 @@ m.describe('Basic', () => {
 
   });
 
+  m.it('should print and return Hello', async function () {
+    let basic = new RPSBasic;
+    let context = new RpsContext;
+
+    let output = await basic.print(context,{},'Hello');
+    expect(output).to.be.equals('Hello');
+
+  });
+
+  m.it('should perform action by condition', async function () {
+    let basic = new RPSBasic;
+    let context = new RpsContext;
+
+    let output = await basic.if(context,{},1 == 1, () => {
+      return true;
+    });
+
+    expect(output).to.be.true;
+
+    // @ts-ignore
+    output = await basic.if(context,{},'a'==='b', () => {
+      return true;
+    });
+
+    expect(output).to.be.null;
+
+  });
+
 })

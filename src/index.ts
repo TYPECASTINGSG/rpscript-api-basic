@@ -2,13 +2,18 @@
  * @module Basic
  */
 
-import notifier from 'node-notifier';
 import {RpsContext,RpsModule,rpsAction} from 'rpscript-interface';
 import { EventEmitter } from 'events';
 
 
 @RpsModule("basic")
 export default class RPSBasic {
+
+  @rpsAction({verbName:'console-log'})
+  async print(ctx:RpsContext,opts:{}, data:any) : Promise<any>{
+    console.log(data);
+    return data;
+  }
 
   @rpsAction({verbName:'as'})
   as (ctx:RpsContext,opts:{}, variable:string, value:any) : Promise<any>{
@@ -20,6 +25,25 @@ export default class RPSBasic {
     ctx.variables[variable] = value;
 
     return Promise.resolve(value);
+  }
+
+  //just a duplication of 'as'
+  @rpsAction({verbName:'assign'})
+  assign (ctx:RpsContext,opts:{}, variable:string, value:any) : Promise<any>{
+    variable = variable.trim();
+    ctx.variables[variable] = value;
+
+    if(variable.charAt(0)!=='$') variable = '$'+variable;
+
+    ctx.variables[variable] = value;
+
+    return Promise.resolve(value);
+  }
+
+  @rpsAction({verbName:'if'})
+  if (ctx:RpsContext,opts:{}, condition:boolean, exec:Function) : Promise<any>{
+    if(condition) return Promise.resolve(exec());
+    else return Promise.resolve(null);
   }
 
   @rpsAction({verbName:'once'})
