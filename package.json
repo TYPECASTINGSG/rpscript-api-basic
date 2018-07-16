@@ -1,5 +1,5 @@
 {
-  "name": "rpscript-api-basic",
+  "name": "@typecasting/rpscript-api-basic",
   "version": "0.2.9",
   "description": "Basic API for RPScript",
   "keywords": [
@@ -13,7 +13,7 @@
   "author": "James Chong",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wei3hua2/rpscript-api-basic.git"
+    "url": "git+https://github.com/wei3hua2/rpscript-api-basic.git"
   },
   "scripts": {
     "watch": "tsc -w",
@@ -30,5 +30,9 @@
     "mocha": "^5.2.0",
     "ts-node": "^6.0.5",
     "typescript": "^2.8.3"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/wei3hua2/rpscript-api-basic/issues"
+  },
+  "homepage": "https://github.com/wei3hua2/rpscript-api-basic#readme"
 }
