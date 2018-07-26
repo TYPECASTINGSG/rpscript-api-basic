@@ -1,5 +1,6 @@
 import {RpsContext,RpsModule,rpsAction} from 'rpscript-interface';
 import { EventEmitter } from 'events';
+import * as math from '../libs/mathjs/math.min';
 
 /** Basic utility for rpscript. Contain basic operation such as condition, event listening, variable assignment, terminal print etc.
  * @namespace Basic
@@ -91,29 +92,6 @@ export default class RPSBasic {
     return Promise.resolve(value);
   }
 
-/**
- * @function if
- * @memberof Basic
- * @example
- * if $varName == 1 @ {
- *  console-log "varName is 1"
- * }
- * 
- * @param {boolean} condition Condition to be met.
- * @param {function} exec () => * . Function to be executed if the condition is met.
- * @returns {* | null }  If condition is met, result of exec. else null.
- * @summary If condition
- * @description
- * Equivalent to if condition in programming language.
- * 
- * 
-*/
-  @rpsAction({verbName:'if'})
-  if (ctx:RpsContext,opts:{}, condition:boolean, exec:Function) : Promise<any>{
-    if(condition) return Promise.resolve(exec());
-    else return Promise.resolve(null);
-  }
-
   /**
  * @function once
  * @memberof Basic
@@ -155,31 +133,6 @@ export default class RPSBasic {
     return event;
   }
 
-
-/**
- * @function data-type
- * @memberof Basic
- * @example
- * console-log data-type 'string-variable'
- * ; Print 'string'
- * console-log data-type 1
- * ;Print 'number'
- * 
- * @param {*} item
- * @returns {string} Information on the data type of the item.
- * @summary derive the data type of result.
- * 
-*/
-  @rpsAction({verbName:'data-type'})
-  async dataType (ctx:RpsContext,opts:{}, item:any) : Promise<string>{
-    let type;
-    if(item instanceof Array) type = 'array';
-    else if(item instanceof Object) type = 'object';
-    else type = typeof item;
-    
-    return type;
-  }
-
   /**
  * @function wait
  * @memberof Basic
@@ -202,51 +155,51 @@ export default class RPSBasic {
   }
 
 /**
- * @function get-element
+ * @function eval
  * @memberof Basic
  * @example
  * ;wait for 5 second
- * assign 'items' {a:1 , b:{c:2,d:3}}
- * get-element $items 'b' 'c'
- * ;print 3
- * console-log $RESULT
+ * eval '1 + 2'
  * 
- * @param {*} item Object to get the element from.
- * @param {list} keys List of keys to get element from.
- * @returns {*} Result.
- * @summary Get the element of an object.
+ * @param {string} alegbra The alegbra to apply.
+ * @returns {*} result of the calculation.
+ * @summary Evaluate a mathematical equation.
  * 
 */
-  @rpsAction({verbName:'get-element'})
-  async getElement (ctx:RpsContext,opts:{},items:any, ...position :any[]) : Promise<any>{
-    
-    let v = items;
-    for(var i=0;i<position.length;i++){
-      v = v[ position[i] ];
-      if(v===undefined)return undefined;
+  @rpsAction({verbName:'eval'})
+  async evaluate (ctx:RpsContext,opts:Object, expression:string, ...args:any[]) : Promise<any>{
+    let retFn = opts['function'];
+    let expr = math.compile(expression);
+
+    let objArg = this.argMapToObj(args);
+    var that = this;
+
+    let lateFn = function (...fnargs:any[]) { 
+      let allArgs = args.concat(fnargs);
+      let objArg = that.argMapToObj(allArgs);
+
+      return expr.eval(objArg); 
     }
-    return v;
+
+    if(retFn===true) return lateFn;
+    else if(retFn===false) return expr.eval(objArg);
+    else if(objArg) return expr.eval(objArg);
+    else return lateFn;
   }
 
-  /**
- * @function return
- * @memberof Basic
- * @example
- * assign 'item' [1,2,3]
- * return $item
- * ;Print out [1,2,3]
- * console-log $RESULT
- * 
- * @param {*} item 
- * @returns {*} item.
- * @summary return input.
- * 
-*/
-@rpsAction({verbName:'return'})
-async ret (ctx:RpsContext,opts:{},item:any) : Promise<any>{
-  return item;
-}
+  private argMapToObj (args:any[]) : Object{
+    if(!args || args.length == 0) return undefined;
 
+    let obj = {};
+    let initCharCode = 'a'.charCodeAt(0);
+
+    for(var i =0;i<args.length;i++){
+      let alphabet = String.fromCharCode(initCharCode + i);
+      obj[alphabet] = args[i];
+    }
+
+    return obj;
+  }
 
 
 }

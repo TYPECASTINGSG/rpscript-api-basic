@@ -22,43 +22,8 @@ m.describe('Basic', () => {
 
     await basic.wait(context,{},2);
 
-    let type = await basic.dataType(context,{},2);
-    expect(type).to.be.equals('number');
-
-    type = await basic.dataType(context,{},[1,2,3]);
-    expect(type).to.be.equals('array');
-
-    type = await basic.dataType(context,{},['1','2','3']);
-    expect(type).to.be.equals('array');
-
-    type = await basic.dataType(context,{},{a:1,b:2,c:3});
-    expect(type).to.be.equals('object');
-
   }).timeout(0);
 
-  m.it('should get the element from list', async function () {
-    let basic = new RPSBasic;
-    let context = new RpsContext;
-    
-    let v = await basic.getElement(context,{},[1,2,3],1);
-    expect(v).to.be.equals(2);
-
-    v = await basic.getElement(context,{},[[1,2],[3,4],[5,6]],1,1);
-    expect(v).to.be.equals(4);
-
-    v = await basic.getElement(context,{},[[1,2],[3,4],[5,6]],1);
-    expect(v).to.be.deep.equals([3,4]);
-
-    v = await basic.getElement(context,{},{a:1,b:2,c:3},'c');
-    expect(v).to.be.deep.equals(3);
-
-    v = await basic.getElement(context,{},{a:1,b:2,c:{d:5}},'c','d');
-    expect(v).to.be.deep.equals(5);
-
-    v = await basic.getElement(context,{},{a:1,b:2,c:{d:5}},'c','f');
-    expect(v).to.be.undefined;
-
-  });
 
   m.it('should print and return Hello', async function () {
     let basic = new RPSBasic;
@@ -66,26 +31,27 @@ m.describe('Basic', () => {
 
     let output = await basic.print(context,{},'Hello');
     expect(output).to.be.equals('Hello');
-
   });
 
-  m.it('should perform action by condition', async function () {
+  m.it('should do calculation', async function () {
     let basic = new RPSBasic;
     let context = new RpsContext;
 
-    let output = await basic.if(context,{},1 == 1, () => {
-      return true;
-    });
+    let output = await basic.evaluate(context,{},'a + b',5,4);
+    expect(output).to.be.equal(9);
 
-    expect(output).to.be.true;
+    output = await basic.evaluate(context,{function:true},'a + b',5);
+    expect(output(4)).to.be.equal(9);
 
-    // @ts-ignore
-    output = await basic.if(context,{},'a'==='b', () => {
-      return true;
-    });
+    output = await basic.evaluate(context,{},'a + 4');
+    expect(output(10)).to.be.equal(14);
 
-    expect(output).to.be.null;
+    output = await basic.evaluate(context,{},'9 + 4');
+    expect(output(1)).to.be.equal(13);
 
+    output = await basic.evaluate(context,{function:false},'9 + 4');
+    expect(output).to.be.equal(13);
   });
+
 
 })
