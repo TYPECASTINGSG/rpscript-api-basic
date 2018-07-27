@@ -52,6 +52,14 @@ m.describe('Basic', () => {
     output = await basic.evaluate(context,{function:false},'9 + 4');
     expect(output).to.be.equal(13);
   });
+  
+  m.it('should perform maths operation', async function () {
+    let basic = new RPSBasic;
+    let context = new RpsContext;
+
+    let output = await basic.abs(context,{function:false},-1.23);
+    expect(output).to.be.equal(1.23);
+  });
 
 
 })

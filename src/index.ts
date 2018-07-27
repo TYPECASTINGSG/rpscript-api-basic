@@ -187,6 +187,140 @@ export default class RPSBasic {
     else return lateFn;
   }
 
+/**
+ * @function abs
+ * @memberof Basic
+ * @example
+ * ;absolute value
+ * abs -5.1
+ * 
+ * @param {number} number 
+ * @returns {number} Absolute number.
+ * 
+*/
+@rpsAction({verbName:'abs'})
+async abs (ctx:RpsContext,opts:{}, num:number) : Promise<number>{
+  return Math.abs(num);
+}
+/**
+ * @function ceil
+ * @memberof Basic
+ * @example
+ * ;ceil value
+ * ceil 5.1
+ * 
+ * @param {number} number 
+ * @returns {number} Absolute number.
+ * 
+*/
+@rpsAction({verbName:'ceil'})
+async ceil (ctx:RpsContext,opts:{}, num:number) : Promise<number>{
+  return Math.ceil(num);
+}
+/**
+ * @function max
+ * @memberof Basic
+ * @example
+ * ;max value
+ * max 5.1 1.2 3.3
+ * 
+ * @param {number} number 
+ * @returns {number} number.
+ * 
+*/
+@rpsAction({verbName:'max'})
+async max (ctx:RpsContext,opts:{}, ...num:number[]) : Promise<number>{
+  return Math.max.apply(this,num);
+}
+/**
+ * @function min
+ * @memberof Basic
+ * @example
+ * ;min value
+ * min 5.1 1.2 3.3
+ * 
+ * @param {...number} number 
+ * @returns {number} number.
+ * 
+*/
+@rpsAction({verbName:'min'})
+async min (ctx:RpsContext,opts:{}, ...num:number[]) : Promise<number>{
+  return Math.min.apply(this,num);
+}
+/**
+ * @function floor
+ * @memberof Basic
+ * @example
+ * ;floor value
+ * floor 5.1
+ * 
+ * @param {number} number 
+ * @returns {number} number.
+ * 
+*/
+@rpsAction({verbName:'floor'})
+async floor (ctx:RpsContext,opts:{}, num:number) : Promise<number>{
+  return Math.floor(num);
+}
+/**
+ * @function power
+ * @memberof Basic
+ * @example
+ * ;power value
+ * power 5 3
+ * 
+ * @param {number} x
+ * @param {number} y 
+ * @returns {number} number.
+ * 
+*/
+@rpsAction({verbName:'pow'})
+async power (ctx:RpsContext,opts:{}, x:number, y:number) : Promise<number>{
+  return Math.pow(x,y);
+}
+/**
+ * @function random
+ * @memberof Basic
+ * @example
+ * ;random
+ * random 
+ * 
+ * @returns {number} number.
+ * 
+*/
+@rpsAction({verbName:'random'})
+async random (ctx:RpsContext,opts:{}) : Promise<number>{
+  return Math.random();
+}
+/**
+ * @function round
+ * @memberof Basic
+ * @example
+ * ;round
+ * round 1.3
+ * 
+ * @returns {number} number.
+ * 
+*/
+@rpsAction({verbName:'round'})
+async round (ctx:RpsContext,opts:{},num:number) : Promise<number>{
+  return Math.round(num);
+}
+/**
+ * @function trunc
+ * @memberof Basic
+ * @example
+ * ;trunc
+ * trunc 1.3
+ * 
+ * @returns {number} number.
+ * 
+*/
+@rpsAction({verbName:'trunc'})
+async trunc (ctx:RpsContext,opts:{},num:number) : Promise<number>{
+  return Math.trunc(num);
+}
+
   private argMapToObj (args:any[]) : Object{
     if(!args || args.length == 0) return undefined;
 
