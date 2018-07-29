@@ -12,13 +12,13 @@ import * as math from '../libs/mathjs/math.min';
 export default class RPSBasic {
 
 /**
- * @function console-log
+ * @function log
  * @memberof Basic
  * @example
  * ;print 'Hello'
- * console-log 'Hello'
+ * log 'Hello'
  * ;print 'Hello' again
- * console-log $RESULT
+ * log $RESULT
  * 
  * @param {string} text information to be printed out on the terminal.
  * @returns {*}  Similar to text input.
@@ -29,10 +29,15 @@ export default class RPSBasic {
  * @see {@link https://www.w3schools.com/jsref/met_console_log.asp}
  * 
 */
-  @rpsAction({verbName:'console-log'})
+  @rpsAction({verbName:'log'})
   async print(ctx:RpsContext,opts:{}, text:any) : Promise<any>{
-    console.log(text);
-    return text;
+    if(text){
+      console.log(text);
+      return text;
+    }
+    else {
+      return console.log;
+    }
   }
 
   /**
