@@ -1,6 +1,5 @@
-import {RpsContext,RpsModule,rpsAction} from 'rpscript-interface';
+import {RpsContext,RpsModule,rpsAction,R} from 'rpscript-interface';
 import { EventEmitter } from 'events';
-import * as math from '../libs/mathjs/math.min';
 
 /** Basic utility for rpscript. Contain basic operation such as condition, event listening, variable assignment, terminal print etc.
  * @namespace Basic
@@ -160,39 +159,6 @@ export default class RPSBasic {
   }
 
 /**
- * @function eval
- * @memberof Basic
- * @example
- * ;wait for 5 second
- * eval '1 + 2'
- * 
- * @param {string} alegbra The alegbra to apply.
- * @returns {*} result of the calculation.
- * @summary Evaluate a mathematical equation.
- * 
-*/
-  @rpsAction({verbName:'eval'})
-  async evaluate (ctx:RpsContext,opts:Object, expression:string, ...args:any[]) : Promise<any>{
-    let retFn = opts['function'];
-    let expr = math.compile(expression);
-
-    let objArg = this.argMapToObj(args);
-    var that = this;
-
-    let lateFn = function (...fnargs:any[]) { 
-      let allArgs = args.concat(fnargs);
-      let objArg = that.argMapToObj(allArgs);
-
-      return expr.eval(objArg); 
-    }
-
-    if(retFn===true) return lateFn;
-    else if(retFn===false) return expr.eval(objArg);
-    else if(objArg) return expr.eval(objArg);
-    else return lateFn;
-  }
-
-/**
  * @function abs
  * @memberof Basic
  * @example
@@ -204,8 +170,8 @@ export default class RPSBasic {
  * 
 */
 @rpsAction({verbName:'abs'})
-async abs (ctx:RpsContext,opts:{}, num:number) : Promise<number>{
-  return Math.abs(num);
+async abs (ctx:RpsContext,opts:{}, ...args:number[]) : Promise<number|Function>{
+  return R.apply(R.curry(Math.abs),args);
 }
 /**
  * @function ceil
@@ -219,8 +185,8 @@ async abs (ctx:RpsContext,opts:{}, num:number) : Promise<number>{
  * 
 */
 @rpsAction({verbName:'ceil'})
-async ceil (ctx:RpsContext,opts:{}, num:number) : Promise<number>{
-  return Math.ceil(num);
+async ceil (ctx:RpsContext,opts:{}, ...args:number[]) : Promise<number|Function>{
+  return R.apply(R.curry(Math.ceil),args);
 }
 /**
  * @function max
@@ -233,9 +199,9 @@ async ceil (ctx:RpsContext,opts:{}, num:number) : Promise<number>{
  * @returns {number} number.
  * 
 */
-@rpsAction({verbName:'max'})
+@rpsAction({verbName:'math-max'})
 async max (ctx:RpsContext,opts:{}, ...num:number[]) : Promise<number>{
-  return Math.max.apply(this,num);
+  return R.apply(R.curryN(2,Math.max),num);
 }
 /**
  * @function min
@@ -248,9 +214,9 @@ async max (ctx:RpsContext,opts:{}, ...num:number[]) : Promise<number>{
  * @returns {number} number.
  * 
 */
-@rpsAction({verbName:'min'})
+@rpsAction({verbName:'math-min'})
 async min (ctx:RpsContext,opts:{}, ...num:number[]) : Promise<number>{
-  return Math.min.apply(this,num);
+  return R.apply(R.curryN(2,Math.min),num);
 }
 /**
  * @function floor
@@ -264,8 +230,8 @@ async min (ctx:RpsContext,opts:{}, ...num:number[]) : Promise<number>{
  * 
 */
 @rpsAction({verbName:'floor'})
-async floor (ctx:RpsContext,opts:{}, num:number) : Promise<number>{
-  return Math.floor(num);
+async floor (ctx:RpsContext,opts:{}, ...num:number[]) : Promise<number>{
+  return R.apply(R.curry(Math.floor),num);
 }
 /**
  * @function power
@@ -280,8 +246,8 @@ async floor (ctx:RpsContext,opts:{}, num:number) : Promise<number>{
  * 
 */
 @rpsAction({verbName:'pow'})
-async power (ctx:RpsContext,opts:{}, x:number, y:number) : Promise<number>{
-  return Math.pow(x,y);
+async power (ctx:RpsContext,opts:{}, ...args:number[]) : Promise<number|Function>{
+  return R.apply(R.curry(Math.pow),args);
 }
 /**
  * @function random
@@ -309,7 +275,7 @@ async random (ctx:RpsContext,opts:{}) : Promise<number>{
 */
 @rpsAction({verbName:'round'})
 async round (ctx:RpsContext,opts:{},num:number) : Promise<number>{
-  return Math.round(num);
+  return R.apply(R.curry(Math.round),num);
 }
 /**
  * @function trunc
@@ -323,7 +289,7 @@ async round (ctx:RpsContext,opts:{},num:number) : Promise<number>{
 */
 @rpsAction({verbName:'trunc'})
 async trunc (ctx:RpsContext,opts:{},num:number) : Promise<number>{
-  return Math.trunc(num);
+  return R.apply(R.curry(Math.trunc),num);
 }
 
   private argMapToObj (args:any[]) : Object{

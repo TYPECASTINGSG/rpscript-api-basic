@@ -33,25 +33,25 @@ m.describe('Basic', () => {
     expect(output).to.be.equals('Hello');
   });
 
-  m.it('should do calculation', async function () {
-    let basic = new RPSBasic;
-    let context = new RpsContext;
+  // m.it('should do calculation', async function () {
+  //   let basic = new RPSBasic;
+  //   let context = new RpsContext;
 
-    let output = await basic.evaluate(context,{},'a + b',5,4);
-    expect(output).to.be.equal(9);
+  //   let output = await basic.evaluate(context,{},'a + b',5,4);
+  //   expect(output).to.be.equal(9);
 
-    output = await basic.evaluate(context,{function:true},'a + b',5);
-    expect(output(4)).to.be.equal(9);
+  //   output = await basic.evaluate(context,{function:true},'a + b',5);
+  //   expect(output(4)).to.be.equal(9);
 
-    output = await basic.evaluate(context,{},'a + 4');
-    expect(output(10)).to.be.equal(14);
+  //   output = await basic.evaluate(context,{},'a + 4');
+  //   expect(output(10)).to.be.equal(14);
 
-    output = await basic.evaluate(context,{},'9 + 4');
-    expect(output(1)).to.be.equal(13);
+  //   output = await basic.evaluate(context,{},'9 + 4');
+  //   expect(output(1)).to.be.equal(13);
 
-    output = await basic.evaluate(context,{function:false},'9 + 4');
-    expect(output).to.be.equal(13);
-  });
+  //   output = await basic.evaluate(context,{function:false},'9 + 4');
+  //   expect(output).to.be.equal(13);
+  // });
   
   m.it('should perform maths operation', async function () {
     let basic = new RPSBasic;
@@ -59,6 +59,29 @@ m.describe('Basic', () => {
 
     let output = await basic.abs(context,{function:false},-1.23);
     expect(output).to.be.equal(1.23);
+  });
+
+  m.it('should call power with varying argument number', async function () {
+    let basic = new RPSBasic;
+    let context = new RpsContext;
+
+    let output:any = await basic.power(context,{},2,3);
+    expect(output).to.be.equal(8);
+
+    output = await basic.power(context,{},2);
+    expect(output(3)).to.be.equal(8);
+
+    output = await basic.power(context,{});
+    expect(output(2,3)).to.be.equal(8);
+
+    output = await basic.min(context,{});
+    expect(output(5,6)).to.be.equal(5);
+
+    output = await basic.min(context,{},9);
+    expect(output(3)).to.be.equal(3);
+
+    output = await basic.min(context,{},9,7,5,1);
+    expect(output).to.be.equal(1);
   });
 
 
