@@ -159,6 +159,22 @@ export default class RPSBasic {
   }
 
 /**
+ * @function stringify
+ * @memberof Basic
+ * @example
+ * stringify $value
+ * 
+ * @param {Object} object 
+ * @returns {string} String result
+ * @summary
+ * 
+*/
+@rpsAction({verbName:'stringify'})
+async stringify (ctx:RpsContext,opts:{}, obj:any) : Promise<string>{
+  return JSON.stringify(obj);
+}
+
+/**
  * @function abs
  * @memberof Basic
  * @example
