@@ -97,10 +97,10 @@ export default class RPSBasic {
   }
 
   /**
- * @function once
+ * @function listen-once
  * @memberof Basic
  * @example
- * once 'connected' $emitter
+ * listen-once 'connected' $emitter
  * 
  * @param {EventEmitter} event The object to listen to.
  * @param {string} eventName Name to listen for event.
@@ -110,7 +110,7 @@ export default class RPSBasic {
  * @see {@link https://nodejs.org/api/events.html#events_emitter_once_eventname_listener}
  * 
 */
-  @rpsAction({verbName:'once'})
+  @rpsAction({verbName:'listen-once'})
   once (ctx:RpsContext,opts:{}, event:EventEmitter, evtName:string) : Promise<any>{
     return new Promise(function(resolve) {
       event.once(evtName, (...params) => resolve(params));
@@ -118,10 +118,10 @@ export default class RPSBasic {
   }
 
 /**
- * @function on
+ * @function listen-on
  * @memberof Basic
  * @example
- * on $emitter 'start' @ $output { console-log $output }
+ * listen-on $emitter 'start' @ $output { console-log $output }
  * 
  * @param {EventEmitter} event The object to listen to.
  * @param {string} eventName Name to listen for event.
@@ -131,7 +131,7 @@ export default class RPSBasic {
  * @see {@link https://nodejs.org/api/events.html#events_emitter_once_eventname_listener}
  * 
 */
-  @rpsAction({verbName:'on'})
+  @rpsAction({verbName:'listen-on'})
   async on (ctx:RpsContext,opts:{}, event:EventEmitter, evtName:string, cb:(any)=>void) : Promise<EventEmitter>{
     event.on(evtName, (...params) => cb(params));
     return event;
