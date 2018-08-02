@@ -80,7 +80,7 @@ m.describe('Basic', () => {
     output = await basic.min(context,{},9);
     expect(output(3)).to.be.equal(3);
 
-    output = await basic.min(context,{},9,7,5,1);
+    output = await basic.min(context,{},7,1);
     expect(output).to.be.equal(1);
   });
 
