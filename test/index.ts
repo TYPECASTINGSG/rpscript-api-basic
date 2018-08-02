@@ -20,8 +20,6 @@ m.describe('Basic', () => {
     // expect(context.variables['val']).to.be.equals('hello');
     expect(context.variables['$val']).to.be.equals('hello');
 
-    await basic.wait(context,{},2);
-
   }).timeout(0);
 
 

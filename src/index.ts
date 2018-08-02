@@ -137,7 +137,7 @@ export default class RPSBasic {
     return event;
   }
 
-  /**
+  /***
  * @function wait
  * @memberof Basic
  * @example
@@ -149,18 +149,18 @@ export default class RPSBasic {
  * @summary wait :: Number → a → a
  * 
 */
-  @rpsAction({verbName:'wait'})
-  wait (ctx:RpsContext,opts:{}, period:number, response?:any) : Promise<any>{
-    response = response ? response : ctx.$RESULT;
+  // @rpsAction({verbName:'wait'})
+  // wait (ctx:RpsContext,opts:{}, period:number, response?:any) : Promise<any>{
+  //   response = response ? response : ctx.$RESULT;
 
-    return new Promise(function (resolve,reject) {
+  //   return new Promise(function (resolve,reject) {
       
-      setTimeout(async function () {
-        resolve(response);
-      }, period*1000);
+  //     setTimeout(async function () {
+  //       resolve(response);
+  //     }, period*1000);
 
-    });
-  }
+  //   });
+  // }
 
 /**
  * @function stringify
