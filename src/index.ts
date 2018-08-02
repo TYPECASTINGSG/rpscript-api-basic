@@ -21,7 +21,7 @@ export default class RPSBasic {
  * 
  * @param {string} text information to be printed out on the terminal.
  * @returns {*}  Similar to text input.
- * @summary print out text on console.
+ * @summary log :: a → a
  * @description
  * This is a wrapper for javascript console.log function.
  * 
@@ -54,7 +54,7 @@ export default class RPSBasic {
  * @param {string} variable Variable name.
  * @param {*} value  Value to be assigned to the variable.
  * @returns {*}  Value of the variable.
- * @summary Variable assignment.
+ * @summary as :: String → a → a
  * @description
  * This is equivalent to variable assignment in programming language.
  * The assigned variable can be access by prefixing $ on the variable name.
@@ -80,7 +80,7 @@ export default class RPSBasic {
  * @param {string} variable Variable name.
  * @param {*} value  Value to be assigned to the variable.
  * @returns {*}  Value of the variable.
- * @summary synonyms: as.
+ * @summary assign :: String → a → a
  * 
  * 
 */  
@@ -105,7 +105,7 @@ export default class RPSBasic {
  * @param {EventEmitter} event The object to listen to.
  * @param {string} eventName Name to listen for event.
  * @returns {*}  If condition is met, result of exec. else null.
- * @summary listen to event once
+ * @summary listen-once :: EventEmitter → String → a
  * 
  * @see {@link https://nodejs.org/api/events.html#events_emitter_once_eventname_listener}
  * 
@@ -121,18 +121,18 @@ export default class RPSBasic {
  * @function listen-on
  * @memberof Basic
  * @example
- * listen-on $emitter 'start' @ $output { console-log $output }
+ * listen-on 'start' (($output)=>log $output) $emitter
  * 
  * @param {EventEmitter} event The object to listen to.
  * @param {string} eventName Name to listen for event.
  * @returns {*}  If condition is met, result of exec. else null.
- * @summary listen to event once
+ * @summary listen-on :: String → (...* → *) → EventEmitter → EventEmitter
  * 
  * @see {@link https://nodejs.org/api/events.html#events_emitter_once_eventname_listener}
  * 
 */
   @rpsAction({verbName:'listen-on'})
-  async on (ctx:RpsContext,opts:{}, event:EventEmitter, evtName:string, cb:(any)=>void) : Promise<EventEmitter>{
+  async on (ctx:RpsContext,opts:{}, evtName:string, cb:(any)=>void, event:EventEmitter) : Promise<EventEmitter>{
     event.on(evtName, (...params) => cb(params));
     return event;
   }
@@ -146,15 +146,19 @@ export default class RPSBasic {
  * 
  * @param {number} period Period to wait for in second.
  * @returns {*} Previous result.
- * @summary Pause the application for a period of time.
+ * @summary wait :: Number → a → a
  * 
 */
   @rpsAction({verbName:'wait'})
-  wait (ctx:RpsContext,opts:{}, period:number) : Promise<any>{
-    return new Promise(function(resolve) {
-      setTimeout(function () {
-        resolve(ctx.$RESULT);
+  wait (ctx:RpsContext,opts:{}, period:number, response?:any) : Promise<any>{
+    response = response ? response : ctx.$RESULT;
+
+    return new Promise(function (resolve,reject) {
+      
+      setTimeout(async function () {
+        resolve(response);
       }, period*1000);
+
     });
   }
 
@@ -162,11 +166,11 @@ export default class RPSBasic {
  * @function stringify
  * @memberof Basic
  * @example
- * stringify $value
+ * stringify {'a':1,'b':2}
  * 
  * @param {Object} object 
  * @returns {string} String result
- * @summary
+ * @summary stringify :: a → String
  * 
 */
 @rpsAction({verbName:'stringify'})
@@ -181,8 +185,8 @@ async stringify (ctx:RpsContext,opts:{}, obj:any) : Promise<string>{
  * ;absolute value
  * abs -5.1
  * 
- * @param {number} number 
  * @returns {number} Absolute number.
+ * @summary abs :: Number → Number
  * 
 */
 @rpsAction({verbName:'abs'})
@@ -198,6 +202,7 @@ async abs (ctx:RpsContext,opts:{}, ...args:number[]) : Promise<number|Function>{
  * 
  * @param {number} number 
  * @returns {number} Absolute number.
+ * @summary ceil :: Number → Number
  * 
 */
 @rpsAction({verbName:'ceil'})
@@ -214,6 +219,8 @@ async ceil (ctx:RpsContext,opts:{}, ...args:number[]) : Promise<number|Function>
  * @param {number} number 
  * @returns {number} number.
  * 
+ * @summary math-max :: Number → ...Number → Number
+ * 
 */
 @rpsAction({verbName:'math-max'})
 async max (ctx:RpsContext,opts:{}, ...num:number[]) : Promise<number>{
@@ -229,6 +236,8 @@ async max (ctx:RpsContext,opts:{}, ...num:number[]) : Promise<number>{
  * @param {...number} number 
  * @returns {number} number.
  * 
+ * @summary math-min :: Number → ...Number → Number
+ * 
 */
 @rpsAction({verbName:'math-min'})
 async min (ctx:RpsContext,opts:{}, ...num:number[]) : Promise<number>{
@@ -243,6 +252,8 @@ async min (ctx:RpsContext,opts:{}, ...num:number[]) : Promise<number>{
  * 
  * @param {number} number 
  * @returns {number} number.
+ * 
+ * @summary floor :: Number → Number
  * 
 */
 @rpsAction({verbName:'floor'})
@@ -260,6 +271,8 @@ async floor (ctx:RpsContext,opts:{}, ...num:number[]) : Promise<number>{
  * @param {number} y 
  * @returns {number} number.
  * 
+ * @summary pow :: Number → Number → Number
+ * 
 */
 @rpsAction({verbName:'pow'})
 async power (ctx:RpsContext,opts:{}, ...args:number[]) : Promise<number|Function>{
@@ -273,6 +286,8 @@ async power (ctx:RpsContext,opts:{}, ...args:number[]) : Promise<number|Function
  * random 
  * 
  * @returns {number} number.
+ * 
+ * @summary random :: Number
  * 
 */
 @rpsAction({verbName:'random'})
@@ -288,39 +303,48 @@ async random (ctx:RpsContext,opts:{}) : Promise<number>{
  * 
  * @returns {number} number.
  * 
+ * @summary round :: Number → Number
+ * 
 */
 @rpsAction({verbName:'round'})
 async round (ctx:RpsContext,opts:{},num:number) : Promise<number>{
   return R.apply(R.curry(Math.round),num);
 }
 /**
- * @function trunc
+ * @function truncate
  * @memberof Basic
  * @example
  * ;trunc
- * trunc 1.3
+ * truncate 1.3
  * 
  * @returns {number} number.
  * 
+ * @summary truncate :: Number → Number
+ * 
 */
-@rpsAction({verbName:'trunc'})
+@rpsAction({verbName:'truncate'})
 async trunc (ctx:RpsContext,opts:{},num:number) : Promise<number>{
   return R.apply(R.curry(Math.trunc),num);
 }
 
-  private argMapToObj (args:any[]) : Object{
-    if(!args || args.length == 0) return undefined;
+/**************************** Ramda (List) ***********************************/
 
-    let obj = {};
-    let initCharCode = 'a'.charCodeAt(0);
-
-    for(var i =0;i<args.length;i++){
-      let alphabet = String.fromCharCode(initCharCode + i);
-      obj[alphabet] = args[i];
-    }
-
-    return obj;
-  }
-
+/**
+ * @function length
+ * @memberof Basic
+ * @example
+ * ;Print out the length of the list
+ * log length []
+ * log length [1,2,3]
+ * 
+ * @param {Array} list list to be determined
+ * @summary length :: [a] → Number
+ * 
+ * @see {@link https://ramdajs.com/docs/#length}
+*/
+@rpsAction({verbName:'length'})
+async length (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
+  return R.length.apply(this,params);
+}
 
 }
