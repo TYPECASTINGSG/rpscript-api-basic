@@ -28,7 +28,8 @@ m.describe('Basic', () => {
     console.log(await basic.wait(context,{},1,'welcome'));
     console.log(await basic.wait(context,{},2,undefined));
 
-    await basic.stdout(context,{},'h');
+    fn = await basic.stdout(context,{});
+    fn('k');
     await basic.stdout(context,{},'e');
     
 

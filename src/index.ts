@@ -54,13 +54,16 @@ export default class RPSBasic {
  * 
 */
 @rpsAction({verbName:'stdout'})
-async stdout(ctx:RpsContext,opts:{}, text:any) : Promise<any>{
+async stdout(ctx:RpsContext,opts:{}, text?:any) : Promise<any>{
   if(text){
     process.stdout.write(text);
     return text;
   }
   else {
-    return process.stdout.write;
+    return function (txt) {
+      process.stdout.write(txt);
+      return txt;
+    }
   }
 }
 
