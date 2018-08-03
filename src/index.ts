@@ -40,6 +40,31 @@ export default class RPSBasic {
   }
 
   /**
+ * @function stdout
+ * @memberof Basic
+ * @example
+ * ;print 'Hello'
+ * stdout 'Hello'
+ * 
+ * @param {string} text information to be printed out on the terminal.
+ * @returns {*}  Similar to text input.
+ * @summary stdout :: a → a
+ * 
+ * @see {@link https://nodejs.org/api/process.html#process_process_stdout}
+ * 
+*/
+@rpsAction({verbName:'stdout'})
+async stdout(ctx:RpsContext,opts:{}, text:any) : Promise<any>{
+  if(text){
+    process.stdout.write(text);
+    return text;
+  }
+  else {
+    return process.stdout.write;
+  }
+}
+
+  /**
  * @function as
  * @memberof Basic
  * @example
