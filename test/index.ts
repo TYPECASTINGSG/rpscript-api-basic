@@ -6,7 +6,7 @@ import { RpsContext } from 'rpscript-interface';
 
 m.describe('Basic', () => {
 
-  m.it('should pop up hello world notification', async function () {
+  m.it.only('should pop up hello world notification', async function () {
     let context = new RpsContext;
     let basic = new RPSBasic;
 
@@ -21,13 +21,12 @@ m.describe('Basic', () => {
     expect(context.variables['$val']).to.be.equals('hello');
 
     console.log('hello');
-    let fn = await basic.wait(context,{function:true},1);
+    let fn = await basic.wait(context,{},1);
     let output = fn('world');
     console.log(output);
 
     console.log(await basic.wait(context,{},1,'welcome'));
-    console.log(await basic.wait(context,{},1,undefined));
-    console.log(await basic.wait(context,{},1));
+    console.log(await basic.wait(context,{},2,undefined));
 
   }).timeout(0);
 

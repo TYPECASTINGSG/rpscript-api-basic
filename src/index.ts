@@ -145,30 +145,24 @@ export default class RPSBasic {
  * wait 5
  * 
  * @param {number} period Period to wait for in second.
+ * @param {*} output returned output after period second.
  * @returns {*} Previous result.
  * @summary wait :: Number → a → a
  * 
 */
   @rpsAction({verbName:'wait'})
-  async wait (ctx:RpsContext,opts:Object, period:number, response?:any) : Promise<any>{
-    let isFn = opts['function'];
-    response = response ? response : ctx.$RESULT;
+  async wait (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any>{
+    // response = response ? response : ctx.$RESULT;
+    // period:number, response?:any
 
-    function sleep(res) {
+    let sleep = R.curry(function(period, res) {
       let time = period * 1000;
       Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, time);
 
       return res;
-    }
+    });
 
-    if(isFn) return sleep;
-    else return sleep(response);
-
-    // return new Promise(function (resolve,reject) {
-      // setTimeout(async function () {
-      //   resolve(response);
-      // }, period*1000);
-    // });
+    return R.apply(sleep,params);
   }
 
 /**
