@@ -20,6 +20,15 @@ m.describe('Basic', () => {
     // expect(context.variables['val']).to.be.equals('hello');
     expect(context.variables['$val']).to.be.equals('hello');
 
+    console.log('hello');
+    let fn = await basic.wait(context,{function:true},1);
+    let output = fn('world');
+    console.log(output);
+
+    console.log(await basic.wait(context,{},1,'welcome'));
+    console.log(await basic.wait(context,{},1,undefined));
+    console.log(await basic.wait(context,{},1));
+
   }).timeout(0);
 
 

@@ -149,18 +149,27 @@ export default class RPSBasic {
  * @summary wait :: Number → a → a
  * 
 */
-  // @rpsAction({verbName:'wait'})
-  // wait (ctx:RpsContext,opts:{}, period:number, response?:any) : Promise<any>{
-  //   response = response ? response : ctx.$RESULT;
+  @rpsAction({verbName:'wait'})
+  async wait (ctx:RpsContext,opts:Object, period:number, response?:any) : Promise<any>{
+    let isFn = opts['function'];
+    response = response ? response : ctx.$RESULT;
 
-  //   return new Promise(function (resolve,reject) {
-      
-  //     setTimeout(async function () {
-  //       resolve(response);
-  //     }, period*1000);
+    function sleep(res) {
+      let time = period * 1000;
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, time);
 
-  //   });
-  // }
+      return res;
+    }
+
+    if(isFn) return sleep;
+    else return sleep(response);
+
+    // return new Promise(function (resolve,reject) {
+      // setTimeout(async function () {
+      //   resolve(response);
+      // }, period*1000);
+    // });
+  }
 
 /**
  * @function stringify
