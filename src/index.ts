@@ -1,7 +1,9 @@
 import {RpsContext,RpsModule,rpsAction,R} from 'rpscript-interface';
 import { EventEmitter } from 'events';
 
-/** Basic utility for rpscript. Contain basic operation such as condition, event listening, variable assignment, terminal print etc.
+/** Basic utility for rpscript. 
+ * RPScript make heavy use of ramda for utility and data manipulation. A lot of the keywords here are a direct port from ramda.
+ * Besides ramda's methods, there are also utility for event listening, variable assignment, terminal print etc.
  * @namespace Basic
  * 
  * @example
@@ -165,6 +167,21 @@ async stdout(ctx:RpsContext,opts:{}, text?:any) : Promise<any>{
     return event;
   }
 
+/***
+ * @function exit
+ * @memberof Basic
+ * @example
+ * exit
+ * 
+ * @param {number} code Optional exit code
+ * 
+*/
+@rpsAction({verbName:'exit'})
+async exit (ctx:RpsContext,opts:{}, code:number) : Promise<void>{
+  if(code) process.exit();
+  else process.exit(code);
+}
+
   /***
  * @function wait
  * @memberof Basic
@@ -213,10 +230,8 @@ async stringify (ctx:RpsContext,opts:{}, obj:any) : Promise<string>{
  * @function abs
  * @memberof Basic
  * @example
- * ;absolute value
- * abs -5.1
+ * log abs -5.1
  * 
- * @returns {number} Absolute number.
  * @summary abs :: Number → Number
  * 
 */
@@ -229,10 +244,8 @@ async abs (ctx:RpsContext,opts:{}, ...args:number[]) : Promise<number|Function>{
  * @memberof Basic
  * @example
  * ;ceil value
- * ceil 5.1
+ * log ceil 5.1
  * 
- * @param {number} number 
- * @returns {number} Absolute number.
  * @summary ceil :: Number → Number
  * 
 */
@@ -241,14 +254,11 @@ async ceil (ctx:RpsContext,opts:{}, ...args:number[]) : Promise<number|Function>
   return R.apply(R.curry(Math.ceil),args);
 }
 /**
- * @function max
+ * @function math-max
  * @memberof Basic
  * @example
- * ;max value
  * max 5.1 1.2 3.3
  * 
- * @param {number} number 
- * @returns {number} number.
  * 
  * @summary math-max :: Number → ...Number → Number
  * 
@@ -258,14 +268,12 @@ async mathMax (ctx:RpsContext,opts:{}, ...num:number[]) : Promise<number>{
   return R.apply(R.curryN(2,Math.max),num);
 }
 /**
- * @function min
+ * @function math-min
  * @memberof Basic
  * @example
  * ;min value
  * min 5.1 1.2 3.3
  * 
- * @param {...number} number 
- * @returns {number} number.
  * 
  * @summary math-min :: Number → ...Number → Number
  * 
@@ -329,10 +337,7 @@ async random (ctx:RpsContext,opts:{}) : Promise<number>{
  * @function round
  * @memberof Basic
  * @example
- * ;round
- * round 1.3
- * 
- * @returns {number} number.
+ * log round 1.3
  * 
  * @summary round :: Number → Number
  * 
@@ -345,10 +350,7 @@ async round (ctx:RpsContext,opts:{},num:number) : Promise<number>{
  * @function truncate
  * @memberof Basic
  * @example
- * ;trunc
  * truncate 1.3
- * 
- * @returns {number} number.
  * 
  * @summary truncate :: Number → Number
  * 
@@ -366,9 +368,6 @@ async trunc (ctx:RpsContext,opts:{},num:number) : Promise<number>{
  * @example
  * adjust (add 10) 1 [1,2,3]
  * 
- * @param {Function} function
- * @param {Number} number
- * @param {Array} array
  * @summary adjust :: (a → a) → Number → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#adjust}
@@ -383,10 +382,8 @@ async adjust (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function all
  * @memberof Basic
  * @example
- * all (equals 3) [3, 3, 3, 3]
+ * log all (equals 3) [3, 3, 3, 3]
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary all :: (a → Boolean) → [a] → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#all}
@@ -400,10 +397,8 @@ async all (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function any
  * @memberof Basic
  * @example
- * any (equals 1) [1,2]
+ * log any (equals 1) [1,2]
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary any :: (a → Boolean) → [a] → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#any}
@@ -417,10 +412,8 @@ async any (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function aperture
  * @memberof Basic
  * @example
- * aperture 2 [1,2,3,4,5]
+ * log aperture 2 [1,2,3,4,5]
  * 
- * @param {Number} number
- * @param {Array} array
  * @summary aperture :: Number → [a] → [[a]]
  * 
  * @see {@link https://ramdajs.com/docs#aperture}
@@ -434,10 +427,8 @@ async aperture (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function append
  * @memberof Basic
  * @example
- * append "tests" ["hello"]
+ * log append "tests" ["hello"]
  * 
- * @param {*} any
- * @param {Array} array
  * @summary append :: a → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#append}
@@ -450,11 +441,7 @@ async append (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function chain
  * @memberof Basic
- * @example
- * TODO:
  * 
- * @param {*} TODO
- * @param {Array} TODO
  * @summary chain :: Chain m => (a → m b) → m a → m b
  * 
  * @see {@link https://ramdajs.com/docs#chain}
@@ -468,10 +455,8 @@ async chain (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function concat
  * @memberof Basic
  * @example
- * concat "hello" "world"
+ * log concat "hello" "world"
  * 
- * @param {*} any
- * @param {*} any
  * @summary concat :: [a] → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#concat}
@@ -485,10 +470,8 @@ async concat (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function contains
  * @memberof Basic
  * @example
- * contains 3 [1,2,3]
+ * log contains 3 [1,2,3]
  * 
- * @param {*} any
- * @param {Array} array
  * @summary contains :: a → [a] → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#contains}
@@ -502,10 +485,8 @@ async contains (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function drop
  * @memberof Basic
  * @example
- * drop 1 [1,2,3]
+ * log drop 1 [1,2,3]
  * 
- * @param {Number} number
- * @param {Array} array
  * @summary drop :: Number → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#drop}
@@ -519,10 +500,8 @@ async drop (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function drop-last
  * @memberof Basic
  * @example
- * drop-last 1 [1,2,3]
+ * log drop-last 1 [1,2,3]
  * 
- * @param {Number} number
- * @param {Array} array
  * @summary drop-last :: Number → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#dropLast}
@@ -535,11 +514,7 @@ async dropLast (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function drop-last-while
  * @memberof Basic
- * @example
- * TODO
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary drop-last-while :: (a → Boolean) → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#dropLastWhile}
@@ -553,9 +528,8 @@ async dropLastWhile (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function drop-repeats
  * @memberof Basic
  * @example
- * drop-repeats [1,1,1,2,3,4,4,4,2,2]
+ * log drop-repeats [1,1,1,2,3,4,4,4,2,2]
  * 
- * @param {Array} array
  * @summary drop-repeats :: [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#dropRepeats}
@@ -570,10 +544,8 @@ async dropRepeats (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function drop-repeats-with
  * @memberof Basic
  * @example
- * drop-repeats-with (eq-by abs) [1,-1,3,-4,-4]
+ * log drop-repeats-with (eq-by abs) [1,-1,3,-4,-4]
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary drop-repeats-with :: ((a,a) → Boolean) → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#dropRepeatsWith}
@@ -588,10 +560,8 @@ async dropRepeatsWith (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function drop-while
  * @memberof Basic
  * @example
- * drop-while (eq-by abs) [1,-1,3,-4,-4]
+ * log drop-while (eq-by abs) [1,-1,3,-4,-4]
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary drop-while :: (a → Boolean) → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#dropWhile}
@@ -605,9 +575,8 @@ async dropWhile (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function ends-with
  * @memberof Basic
  * @example
- * ends-with 'c' 'abc'
+ * log ends-with 'c' 'abc'
  * 
- * @param {Array} array
  * @summary ends-with :: [a] → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#endsWith}
@@ -621,10 +590,8 @@ async endsWith (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function filter
  * @memberof Basic
  * @example
- * TODO
+ * log filter (lt 2) [1,2,3]
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary filter :: Filterable f => (a → Boolean) → f a → f a
  * 
  * @see {@link https://ramdajs.com/docs#filter}
@@ -641,8 +608,6 @@ filter (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any[]> {
  * @example
  * find (prop-eq 'a' 2) [{'a':1},{'a':2},{'a':3}]
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary find :: (a → Boolean) → [a] → a | undefined
  * 
  * @see {@link https://ramdajs.com/docs#find}
@@ -658,8 +623,6 @@ async find (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * find-index (prop-eq 'a' 2) [{'a':1},{'a':2},{'a':3}]
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary find-index :: (a → Boolean) → [a] → Number
  * 
  * @see {@link https://ramdajs.com/docs#findIndex}
@@ -675,9 +638,7 @@ async findIndex (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * find-last (prop-eq 'a' 2) [{'a':1},{'a':2},{'a':3}]
  * 
- * @param {Function} function
- * @param {Array} array
- * @summary find :: (a → Boolean) → [a] → a | undefined
+ * @summary find-last :: (a → Boolean) → [a] → a | undefined
  * 
  * @see {@link https://ramdajs.com/docs#findLast}
 */
@@ -692,9 +653,7 @@ async findLast (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * find-last-index (prop-eq 'a' 2) [{'a':1},{'a':2},{'a':3}]
  * 
- * @param {Function} function
- * @param {Array} array
- * @summary find-index :: (a → Boolean) → [a] → Number
+ * @summary find-last-index :: (a → Boolean) → [a] → Number
  * 
  * @see {@link https://ramdajs.com/docs#findLastIndex}
 */
@@ -707,9 +666,8 @@ async findLastIndex (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function flatten
  * @memberof Basic
  * @example
- * flatten [1,2,[3,4]]
+ * log flatten [1,2,[3,4]]
  * 
- * @param {Array} array
  * @summary flatten :: [a] → [b]
  * 
  * @see {@link https://ramdajs.com/docs#flatten}
@@ -725,8 +683,6 @@ async flatten (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * for-each (log) [1,2,3,4]
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary for-each :: (a → *) → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#forEach}
@@ -740,9 +696,8 @@ async forEach (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function from-pairs
  * @memberof Basic
  * @example
- * from-pairs [['a',1],['b',2],['c',3]]
+ * log from-pairs [['a',1],['b',2],['c',3]]
  * 
- * @param {Array} array
  * @summary from-pairs :: [[k,v]] → {k:v}
  * 
  * @see {@link https://ramdajs.com/docs#fromPairs}
@@ -755,10 +710,7 @@ async fromPairs (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function group-by
  * @memberof Basic
- * @example
- * TODO
  * 
- * @param {Array} array
  * @summary group-by :: ((a → String) → [a] → {String:[a]}
  * 
  * @see {@link https://ramdajs.com/docs#groupBy}
@@ -772,10 +724,8 @@ async groupBy (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function group-with
  * @memberof Basic
  * @example
- * group-with (equals) [0,1,1,2,3,4,6,4]
+ * log group-with (equals) [0,1,1,2,3,4,6,4]
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary group-with :: ((a,a) → Boolean) → [a] → [[a]]
  * 
  * @see {@link https://ramdajs.com/docs#groupWith}
@@ -789,9 +739,8 @@ async groupWith (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function head
  * @memberof Basic
  * @example
- * head ['ff',''aa','lol']
+ * log head ['ff',''aa','lol']
  * 
- * @param {Array} array
  * @summary head :: [a] → a | undefined
  * 
  * @see {@link https://ramdajs.com/docs#head}
@@ -807,8 +756,6 @@ async head (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * index-of 3 [1,2,3,4]
  * 
- * @param {*} any
- * @param {Array} array
  * @summary index-of :: a → [a] → Number
  * 
  * @see {@link https://ramdajs.com/docs#indexOf}
@@ -824,8 +771,6 @@ async indexOf (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * index-by (prop 'id') [{'id':'abc','title':'A'},{'id':'xyz','title':'B'}]
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary index-by :: (a → String) → [{k:v}] → {:{k:v}}
  * 
  * @see {@link https://ramdajs.com/docs#indexBy}
@@ -839,10 +784,10 @@ async indexBy (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function init
  * @memberof Basic
  * @example
- * init [1, 2, 3]
+ * log init [1, 2, 3]
  * 
  * @param {Array} array
- * @summary index-by :: [a] → [a]
+ * @summary init :: [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#init}
 */
@@ -857,9 +802,6 @@ async init (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * insert 2 'x' [1,2,3,4]
  * 
- * @param {Number} number
- * @param {*} any
- * @param {Array} array
  * @summary insert :: Number → a → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#insert}
@@ -875,9 +817,6 @@ async insert (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * insert-all 2 ['x','y','z'] [1,2,3,4]
  * 
- * @param {Number} number
- * @param {Array} array
- * @param {Array} array
  * @summary insert-all :: Number → [a] → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#insertAll}
@@ -893,8 +832,6 @@ async insertAll (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * intersperse 'n' ['x','y','z']
  * 
- * @param {*} any
- * @param {Array} array
  * @summary intersperse :: a → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#intersperse}
@@ -910,8 +847,6 @@ async intersperse (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * join ' ' ['x','y','z']
  * 
- * @param {String} string
- * @param {Array} array
  * @summary join :: String → [a] → String
  * 
  * @see {@link https://ramdajs.com/docs#join}
@@ -925,9 +860,8 @@ async join (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function last
  * @memberof Basic
  * @example
- * last ['x','y','z']
+ * log last ['x','y','z']
  * 
- * @param {Array} array
  * @summary last :: [a] → a | undefined
  * 
  * @see {@link https://ramdajs.com/docs#last}
@@ -941,9 +875,8 @@ async last (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function last-index-of
  * @memberof Basic
  * @example
- * last-index-of 'y' ['x','y','y','z']
+ * log last-index-of 'y' ['x','y','y','z']
  * 
- * @param {Array} array
  * @summary last-index-of :: a → [a] → Number
  * 
  * @see {@link https://ramdajs.com/docs#lastIndexOf}
@@ -959,7 +892,6 @@ async lastIndexOf (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * length [1,2,3]
  * 
- * @param {Array} array
  * @summary length :: [a] → Number
  * 
  * @see {@link https://ramdajs.com/docs/#length}
@@ -974,10 +906,8 @@ async length (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function map
  * @memberof Basic
  * @example
- * map (multiple 2) [1,2,3]
+ * log map (multiple 2) [1,2,3]
  * 
- * @param {Function} function 
- * @param {Array} list 
  * @summary map :: Functor f => (a → b) → f a → f b
  * 
  * @see {@link https://ramdajs.com/docs#map}
@@ -993,8 +923,6 @@ map (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any[]> {
  * @example
  * map-accum (multiple 2) [1,2,3]
  * 
- * @param {Function} function 
- * @param {Array} list 
  * @summary map-accum :: ((acc,x) → (acc,y)) → acc → [x] → (acc, [y])
  * 
  * @see {@link https://ramdajs.com/docs#mapAccum}
@@ -1007,11 +935,7 @@ async mapAccum (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function map-accum-right
  * @memberof Basic
- * @example
- * TODO
  * 
- * @param {Function} function 
- * @param {Array} list 
  * @summary map-accum-right :: ((acc,x) → (acc,y)) → acc → [x] → ([y],acc)
  * 
  * @see {@link https://ramdajs.com/docs#mapAccumRight}
@@ -1040,11 +964,7 @@ async mergeAll (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function none
  * @memberof Basic
- * @example
- * TODO
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary none :: (a → Boolean) → [a] → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#none}
@@ -1060,8 +980,6 @@ async none (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * nth 1 ['a','b','c']
  * 
- * @param {Number} number
- * @param {Array} array
  * @summary nth :: Number → [a] → a | undefined
  * 
  * @see {@link https://ramdajs.com/docs#nth}
@@ -1075,10 +993,8 @@ async nth (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function pair
  * @memberof Basic
  * @example
- * pair 'foo' 'bar'
+ * log pair 'foo' 'bar'
  * 
- * @param {*} any
- * @param {*} any
  * @summary pair :: a → b → (a,b)
  * 
  * @see {@link https://ramdajs.com/docs#pair}
@@ -1092,10 +1008,8 @@ async pair (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function partition
  * @memberof Basic
  * @example
- * partition (contains 's') ['sss','ttt','sas','abc']
+ * log partition (contains 's') ['sss','ttt','sas','abc']
  * 
- * @param {Function} function
- * @param {Array|Object} array or object
  * @summary partition :: Filterable f => (a → Boolean) → f a → [f a, f a]
  * 
  * @see {@link https://ramdajs.com/docs#partition}
@@ -1111,8 +1025,6 @@ async partition (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * pluck (prop 'a') [{a:1},{a:2}]
  * 
- * @param {Function} function
- * @param {Array|Object} array or object
  * @summary pluck :: Functor f => k → f {k:v} → f v
  * 
  * @see {@link https://ramdajs.com/docs#pluck}
@@ -1126,10 +1038,8 @@ async pluck (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function prepend
  * @memberof Basic
  * @example
- * prepend 'fee' ['fi','fo','fum']
+ * log prepend 'fee' ['fi','fo','fum']
  * 
- * @param {*} any
- * @param {Array} array
  * @summary prepend :: a → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#prepend}
@@ -1143,10 +1053,8 @@ async prepend (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function range
  * @memberof Basic
  * @example
- * range 1 5
+ * log range 1 5
  * 
- * @param {Number} number
- * @param {Number} number
  * @summary range :: Number → Number → [Number]
  * 
  * @see {@link https://ramdajs.com/docs#range}
@@ -1160,11 +1068,8 @@ async range (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function reduce
  * @memberof Basic
  * @example
- * reduce (subtract) 0 [1,2,3,4]
+ * log reduce (subtract) 0 [1,2,3,4]
  * 
- * @param {Function} function
- * @param {*} any
- * @param {Array} array
  * @summary reduce :: ((a,b) → a) → a → [b] → a
  * 
  * @see {@link https://ramdajs.com/docs#reduce}
@@ -1177,8 +1082,6 @@ async reduce (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function reduce-by
  * @memberof Basic
- * @example
- * TODO
  * 
  * @summary reduce-by :: ((a,b) → a) → a → (b → String) → [b] → {String:a}
  * 
@@ -1195,10 +1098,7 @@ async reduceBy (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * reduce-right (subtract) 0 [1,2,3,4]
  * 
- * @param {Function} function
- * @param {*} any
- * @param {Array} array
- * @summary reduce :: ((a,b) → b) → b → [a] → b
+ * @summary reduce-right :: ((a,b) → b) → b → [a] → b
  * 
  * @see {@link https://ramdajs.com/docs#reduceRight}
 */
@@ -1210,8 +1110,6 @@ async reduceRight (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function reduce-while
  * @memberof Basic
- * @example
- * TODO
  * 
  * @summary reduce-while :: ((a,b) → Boolean) → ((a,b) → a) → a → [b] → a
  * 
@@ -1225,11 +1123,7 @@ async reduceWhile (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function reject
  * @memberof Basic
- * @example
- * TODO
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary reject :: Filterable f => (a → Boolean) → f a → f a
  * 
  * @see {@link https://ramdajs.com/docs#reject}
@@ -1243,11 +1137,8 @@ async reject (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function remove
  * @memberof Basic
  * @example
- * remove 2 3 [1,2,3,4,5,6,7,8]
+ * log remove 2 3 [1,2,3,4,5,6,7,8]
  * 
- * @param {Number} number
- * @param {Number} number
- * @param {Array} array
  * @summary remove :: Number → Number → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#remove}
@@ -1261,10 +1152,8 @@ async remove (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function repeat
  * @memberof Basic
  * @example
- * repeat "hi" 5
+ * log repeat "hi" 5
  * 
- * @param {*} any
- * @param {Number} number
  * @summary repeat :: a → n → [a]
  * 
  * @see {@link https://ramdajs.com/docs#repeat}
@@ -1278,9 +1167,8 @@ async repeat (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function reverse
  * @memberof Basic
  * @example
- * reverse [1,2,3]
+ * log reverse [1,2,3]
  * 
- * @param {Array} array
  * @summary reverse :: [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#reverse}
@@ -1294,7 +1182,7 @@ async reverse (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function scan
  * @memberof Basic
  * @example
- * TODO
+ * log scan (multiply) 1 [1, 2, 3, 4] 
  * 
  * @summary scan :: ((a,b) → a) → a → [b] → [a]
  * 
@@ -1309,11 +1197,8 @@ async scan (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function slice
  * @memberof Basic
  * @example
- * slice 1 3 ['a','b','c','d']
+ * log slice 1 3 ['a','b','c','d']
  * 
- * @param {Number} number
- * @param {Number} number
- * @param {*} any
  * @summary slice :: Number → Number → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#slice}
@@ -1327,10 +1212,8 @@ async slice (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function sort
  * @memberof Basic
  * @example
- * TODO
+ * log sort (ascend prop "name") [{'name':'z'},{'name':'a'}]
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary sort :: ((a,a) → Number) → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#sort}
@@ -1346,8 +1229,6 @@ async sort (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * split-at 1 [1,2,3]
  * 
- * @param {Number} number
- * @param {Array} array
  * @summary split-at :: Number → [a] → [[a],[a]]
  * 
  * @see {@link https://ramdajs.com/docs#splitAt}
@@ -1363,8 +1244,6 @@ async splitAt (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * split-every 3 [1,2,3,4,5,6,7]
  * 
- * @param {Number} number
- * @param {Array} array
  * @summary split-every :: Number → [a] → [[a]]
  * 
  * @see {@link https://ramdajs.com/docs#splitEvery}
@@ -1380,8 +1259,6 @@ async splitEvery (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * split-when (equals 3) [1,2,3,4,5,6,7]
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary split-when :: (a → Boolean) → [a] → [[a],[a]]
  * 
  * @see {@link https://ramdajs.com/docs#splitWhen}
@@ -1397,8 +1274,6 @@ async splitWhen (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * starts-with 'a' 'abc'
  * 
- * @param {*} any
- * @param {Array} array
  * @summary starts-with :: [a] → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#startsWith}
@@ -1412,9 +1287,8 @@ async startsWith (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function tail
  * @memberof Basic
  * @example
- * tail [1,2,3]
+ * log tail [1,2,3]
  * 
- * @param {Array} array
  * @summary tail :: [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#tail}
@@ -1428,10 +1302,8 @@ async tail (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function take
  * @memberof Basic
  * @example
- * take 2 [1,2,3]
+ * log take 2 [1,2,3]
  * 
- * @param {Number} number
- * @param {Array} array
  * @summary take :: [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#take}
@@ -1445,10 +1317,8 @@ async take (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function take-last
  * @memberof Basic
  * @example
- * take-last 2 [1,2,3]
+ * log take-last 2 [1,2,3]
  * 
- * @param {Number} number
- * @param {Array} array
  * @summary take-last :: [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#takeLast}
@@ -1461,11 +1331,7 @@ async takeLast (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function take-last-while
  * @memberof Basic
- * @example
- * TODO
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary take-last-while :: (a → Boolean) → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#takeLastWhile}
@@ -1478,11 +1344,7 @@ async takeLastWhile (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function take-while
  * @memberof Basic
- * @example
- * TODO
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary take-while :: (a → Boolean) → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#takeWhile}
@@ -1498,8 +1360,6 @@ async takeWhile (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * times (identity) 5
  * 
- * @param {Function} function
- * @param {Number} number
  * @summary times :: (Number → a) → Number → [a]
  * 
  * @see {@link https://ramdajs.com/docs#times}
@@ -1513,9 +1373,8 @@ async times (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function transpose
  * @memberof Basic
  * @example
- * transpose [[1,'a'],[2,'b'],[3,'c']]
+ * log transpose [[1,'a'],[2,'b'],[3,'c']]
  * 
- * @param {Array} array
  * @summary transpose :: [[a]] → [[a]]
  * 
  * @see {@link https://ramdajs.com/docs#transpose}
@@ -1528,8 +1387,6 @@ async transpose (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function unfold
  * @memberof Basic
- * @example
- * TODO
  * 
  * @summary unfold :: (a → [b]) → * → [b]
  * 
@@ -1546,7 +1403,6 @@ async unfold (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * uniq [1,2,3,3,4,5,4]
  * 
- * @param {Array} array
  * @summary uniq :: [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#uniq}
@@ -1562,8 +1418,6 @@ async uniq (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * uniq-by (abs) [-1, -5, 2, 10, 1, 2]
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary uniq-by :: (a → b) → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#uniqBy}
@@ -1576,11 +1430,7 @@ async uniqBy (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function uniq-with
  * @memberof Basic
- * @example
- * TODO
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary uniq-with :: ((a,a) → Boolean) → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#uniqWith}
@@ -1596,7 +1446,6 @@ async uniqWith (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * unnest  [1 , [2], [[3]]]
  * 
- * @param {Array} array
  * @summary unnest :: Chain c => c (c a) → c a
  * 
  * @see {@link https://ramdajs.com/docs#unnest}
@@ -1612,9 +1461,6 @@ async unnest (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * update 1 11 [0,1,2]
  * 
- * @param {Number} number
- * @param {*} any
- * @param {Array} array
  * @summary update :: Number → a → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#update}
@@ -1628,10 +1474,8 @@ async update (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function without
  * @memberof Basic
  * @example
- * without [1,2] [1,2,1,3,4]
+ * log without [1,2] [1,2,1,3,4]
  * 
- * @param {Array} array
- * @param {Array} array
  * @summary without :: [a] → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#without}
@@ -1645,10 +1489,8 @@ async without (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function xprod
  * @memberof Basic
  * @example
- * xprod [1,2] ['a','b']
+ * log xprod [1,2] ['a','b']
  * 
- * @param {Array} array
- * @param {Array} array
  * @summary xprod :: [a] → [b] → [[a,b]]
  * 
  * @see {@link https://ramdajs.com/docs#xprod}
@@ -1662,10 +1504,8 @@ async xprod (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function zip
  * @memberof Basic
  * @example
- * zip [1,2,3] ['a','b','c']
+ * log zip [1,2,3] ['a','b','c']
  * 
- * @param {Array} array
- * @param {Array} array
  * @summary zip :: [a] → [b] → [[a,b]]
  * 
  * @see {@link https://ramdajs.com/docs#zip}
@@ -1679,10 +1519,8 @@ async zip (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function zip-obj
  * @memberof Basic
  * @example
- * zip-obj ['a','b','c'] [1,2,3]
+ * log zip-obj ['a','b','c'] [1,2,3]
  * 
- * @param {Array} array
- * @param {Array} array
  * @summary zip-obj :: [String] → [*] → {String:*}
  * 
  * @see {@link https://ramdajs.com/docs#zipObj}
@@ -1696,12 +1534,7 @@ async zipObj (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function zip-with
  * @memberof Basic
- * @example
- * TODO
  * 
- * @param {Function} function
- * @param {Array} array
- * @param {Array} array
  * @summary zip-with :: ((a,b) → c) [a] → [b] → [c]
  * 
  * @see {@link https://ramdajs.com/docs#zipWith}
@@ -1719,8 +1552,6 @@ async zipWith (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * keys {a:1,b:2,c:3}
  * 
- * @param {Objects} object
- * @summary keys :: {k:v} → [k]
  * 
  * @see {@link https://ramdajs.com/docs#keys}
 */
@@ -1733,11 +1564,8 @@ async keys (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function assoc
  * @memberof Basic
  * @example
- * assoc 'd' 4 {a:1,b:2,c:3}
+ * log assoc 'd' 4 {a:1,b:2,c:3}
  * 
- * @param {String} string
- * @param {*} any
- * @param {Objects} object
  * @summary assoc :: String → a → {k:v} → {k:v}
  * 
  * @see {@link https://ramdajs.com/docs#assoc}
@@ -1751,11 +1579,8 @@ async assoc (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function assoc-path
  * @memberof Basic
  * @example
- * assoc-path ['c','d'] 4 {a:1,b:2,c:{d:0}}
+ * log assoc-path ['c','d'] 4 {a:1,b:2,c:{d:0}}
  * 
- * @param {Array} array
- * @param {*} any
- * @param {Objects} object
  * @summary assoc-path :: [Idx] → a → {a} → {a}
  * 
  * @see {@link https://ramdajs.com/docs#assocPath}
@@ -1771,7 +1596,6 @@ async assocPath (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * clone {a:1}
  * 
- * @param {Objects} object
  * @summary clone :: {*} → {*}
  * 
  * @see {@link https://ramdajs.com/docs#clone}
@@ -1785,11 +1609,9 @@ async clone (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function dissoc
  * @memberof Basic
  * @example
- * dissoc 'b' {a:1,b:2,c:3}
+ * log dissoc 'b' {a:1,b:2,c:3}
  * 
- * @param {String} string
- * @param {Objects} object
- * @summary assoc :: String → {k:v} → {k:v}
+ * @summary dissoc :: String → {k:v} → {k:v}
  * 
  * @see {@link https://ramdajs.com/docs#dissoc}
 */
@@ -1802,11 +1624,9 @@ async dissoc (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function dissoc-path
  * @memberof Basic
  * @example
- * dissoc-path ['c','d'] 4 {a:1,b:2,c:{d:5}}
+ * log dissoc-path ['c','d'] 4 {a:1,b:2,c:{d:5}}
  * 
- * @param {Array} array
- * @param {Objects} object
- * @summary assoc-path :: [Idx] → {k:v} → {k:v}
+ * @summary dissoc-path :: [Idx] → {k:v} → {k:v}
  * 
  * @see {@link https://ramdajs.com/docs#dissocPath}
 */
@@ -1819,11 +1639,8 @@ async dissocPath (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function eq-props
  * @memberof Basic
  * @example
- * eq-props 'a' {a:1} {a:1}
+ * log eq-props 'a' {a:1} {a:1}
  * 
- * @param {String} string
- * @param {Objects} object
- * @param {Objects} object
  * @summary eq-props :: k → {k:v} → {k:v} →  Boolean
  * 
  * @see {@link https://ramdajs.com/docs#eqProps}
@@ -1837,7 +1654,7 @@ async eqProps (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function evolve
  * @memberof Basic
  * @example
- * TODO
+ * log evolve {'firstName': trim } {'firstName': '  Tomato '}
  * 
  * @summary evolve :: {k: (v → v)} → {k:v} → {k:v}
  * 
@@ -1851,8 +1668,6 @@ async evolve (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function for-each-obj-indexed
  * @memberof Basic
- * @example
- * TODO
  * 
  * @summary for-each-obj-indexed :: ((a,String,StrMap a)  → Any) → StrMap a → StrMap a
  * 
@@ -1867,10 +1682,8 @@ async forEachObjIndexed (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any>
  * @function has
  * @memberof Basic
  * @example
- * has 'name' {name:'Alice'}
+ * log has 'name' {name:'Alice'}
  * 
- * @param {String} string
- * @param {Object} object
  * @summary has :: s → {s:x} → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#has}
@@ -1887,7 +1700,6 @@ async has (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * invert {first:'Alice',second:'allen',third:'Alice'}
  * 
- * @param {Object} object
  * @summary invert :: {s:x} → {x:[s,...]}
  * 
  * @see {@link https://ramdajs.com/docs#invert}
@@ -1903,7 +1715,6 @@ async invert (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * invert-obj {first:'Alice',second:'allen'}
  * 
- * @param {Object} object
  * @summary invert-obj :: {s:x} → {x:s}
  * 
  * @see {@link https://ramdajs.com/docs#invertObj}
@@ -1913,63 +1724,9 @@ async invertObj (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
   return R.invertObj.apply(this,params);
 }
 
-
-/**
- * @function lens
- * @memberof Basic
- * @example
- * TODO
- * 
- * @see {@link https://ramdajs.com/docs#lens}
-*/
-@rpsAction({verbName:'lens'})
-async lens (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
-  return R.lens.apply(this,params);
-}
-
-/**
- * @function lens-index
- * @memberof Basic
- * @example
- * TODO
- * 
- * @see {@link https://ramdajs.com/docs#lensIndex}
-*/
-@rpsAction({verbName:'lens-index'})
-async lensIndex (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
-  return R.lensIndex.apply(this,params);
-}
-
-/**
- * @function lens-path
- * @memberof Basic
- * @example
- * TODO
- * 
- * @see {@link https://ramdajs.com/docs#lensPath}
-*/
-@rpsAction({verbName:'lens-path'})
-async lensPath (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
-  return R.lensPath.apply(this,params);
-}
-
-/**
- * @function lens-prop
- * @memberof Basic
- * @example
- * TODO
- * @see {@link https://ramdajs.com/docs#lensProp}
-*/
-@rpsAction({verbName:'lens-prop'})
-async lensProp (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
-  return R.lensProp.apply(this,params);
-}
-
 /**
  * @function map-obj-indexed
  * @memberof Basic
- * @example
- * TODO
  * 
  * @summary map-obj-indexed :: ((*,String,Object)→ *) → Object → Object
  * 
@@ -2000,8 +1757,6 @@ async merge (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function merge-deep-left
  * @memberof Basic
- * @example
- * TODO
  * 
  * @summary merge-deep-left :: {a} → {a} → {a}
  * 
@@ -2015,8 +1770,6 @@ async mergeDeepLeft (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function merge-deep-right
  * @memberof Basic
- * @example
- * TODO
  * 
  * @summary merge :: {a} → {a} → {a}
  * 
@@ -2030,8 +1783,6 @@ async mergeDeepRight (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function merge-deep-with
  * @memberof Basic
- * @example
- * TODO
  * 
  * @summary merge-deep-with :: ((a,a) → a) → {a} → {a} → {a}
  * 
@@ -2045,8 +1796,6 @@ async mergeDeepWith (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function merge-with
  * @memberof Basic
- * @example
- * TODO
  * 
  * @summary merge-deep-with :: ((a,a) → a) → {a} → {a} → {a}
  * 
@@ -2060,8 +1809,6 @@ async mergeWith (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function merge-with-key
  * @memberof Basic
- * @example
- * TODO
  * 
  * @summary merge-with-key :: ((String, a,a) → a) → {a} → {a} → {a}
  * 
@@ -2078,8 +1825,6 @@ async mergeWithKey (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * obj-of 'must' ['a','b','c']
  * 
- * @param {String} string
- * @param {*} any
  * @summary obj-of :: String → a → {String:a}
  * 
  * @see {@link https://ramdajs.com/docs#objOf}
@@ -2093,10 +1838,8 @@ async objOf (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function omit
  * @memberof Basic
  * @example
- * omit ['a','b'] {a:1,b:2,c:3,d:4}
+ * log omit ['a','b'] {a:1,b:2,c:3,d:4}
  * 
- * @param {Array} array
- * @param {Object} object
  * @summary omit :: [String] → {String:*} → {String:*}
  * 
  * @see {@link https://ramdajs.com/docs#omit}
@@ -2107,26 +1850,11 @@ async omit (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 }
 
 /**
- * @function over
- * @memberof Basic
- * @example
- * TODO
- * 
- * @see {@link https://ramdajs.com/docs#over}
-*/
-@rpsAction({verbName:'over'})
-async over (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
-  return R.over.apply(this,params);
-}
-
-/**
  * @function path
  * @memberof Basic
  * @example
- * path ['a','b'] {a:1,{b:2}}
+ * log path ['a','b'] {a:1,{b:2}}
  * 
- * @param {Array} array
- * @param {Object} object
  * @summary path :: [Idx] → {a} → a | undefined
  * 
  * @see {@link https://ramdajs.com/docs#path}
@@ -2140,11 +1868,8 @@ async path (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function path-or
  * @memberof Basic
  * @example
- * path-or 'N/A' ['a','b'] {a:1,{b:2}}
+ * log path-or 'N/A' ['a','b'] {a:1,{b:2}}
  * 
- * @param {String} string
- * @param {Array} array
- * @param {Object} object
  * @summary path-or :: a → [Idx] → {a} → a
  * 
  * @see {@link https://ramdajs.com/docs#pathOr}
@@ -2158,10 +1883,8 @@ async pathOr (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function pick
  * @memberof Basic
  * @example
- * pick ['a','b'] {a:1,b:2,c:3,d:4}
+ * log pick ['a','b'] {a:1,b:2,c:3,d:4}
  * 
- * @param {Array} array
- * @param {Object} object
  * @summary pick :: [k] → {k:v} → {k:v}
  * 
  * @see {@link https://ramdajs.com/docs#pick}
@@ -2175,10 +1898,8 @@ async pick (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function pick-all
  * @memberof Basic
  * @example
- * pick-all ['a','b','g'] {a:1,b:2,c:3,d:4}
+ * log pick-all ['a','b','g'] {a:1,b:2,c:3,d:4}
  * 
- * @param {Array} array
- * @param {Object} object
  * @summary pick-all :: [k] → {k:v} → {k:v}
  * 
  * @see {@link https://ramdajs.com/docs#pickAll}
@@ -2192,10 +1913,9 @@ async pickAll (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function pick-by
  * @memberof Basic
  * @example
- * TODO
+ * assign 'toUpperCase' ($val,$key) => equals $key to-upper $key
+ * log pick-by $toUpperCase {a: 1, b: 2, A: 3, B: 4}
  * 
- * @param {Function} function
- * @param {Object} object
  * @summary pick-by :: ((v,k) → Boolean) → {k:v} → {k:v}
  * 
  * @see {@link https://ramdajs.com/docs#pickBy}
@@ -2209,10 +1929,9 @@ async pickBy (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function project
  * @memberof Basic
  * @example
- * TODO
+ * assign 'kids' [{name: 'Abby', age: 7, hair: 'blond', grade: 2},{name: 'Fred', age: 12, hair: 'brown', grade: 7}]
+ * log project ['name', 'grade'] $kids
  * 
- * @param {Array} array
- * @param {Array} array
  * @summary project :: [k] → [{k:v}] → [{k:v}]
  * 
  * @see {@link https://ramdajs.com/docs#project}
@@ -2228,8 +1947,6 @@ async project (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * prop 'x' {x:100}
  * 
- * @param {String} string
- * @param {Object} object
  * @summary prop :: s → {s:a} → a | undefined
  * 
  * @see {@link https://ramdajs.com/docs#prop}
@@ -2243,11 +1960,8 @@ async prop (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function prop-or
  * @memberof Basic
  * @example
- * prop-or 'N/A' 'notfound' {x:100}
+ * log prop-or 'N/A' 'notfound' {x:100}
  * 
- * @param {Object} object
- * @param {String} string
- * @param {Object} object
  * @summary prop-or :: a → String → Object → a
  * 
  * @see {@link https://ramdajs.com/docs#propOr}
@@ -2261,10 +1975,8 @@ async propOr (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function props
  * @memberof Basic
  * @example
- * props ['x','y'] {x:100,y:50}
+ * log props ['x','y'] {x:100,y:50}
  * 
- * @param {Array} array
- * @param {Object} object
  * @summary props :: [k] → {k:v} → [v]
  * 
  * @see {@link https://ramdajs.com/docs#props}
@@ -2274,18 +1986,6 @@ async props (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
   return R.props.apply(this,params);
 }
 
-/**
- * @function set
- * @memberof Basic
- * @example
- * TODO
- * 
- * @see {@link https://ramdajs.com/docs#set}
-*/
-@rpsAction({verbName:'set'})
-async set (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
-  return R.set.apply(this,params);
-}
 
 /**
  * @function to-pairs
@@ -2293,8 +1993,6 @@ async set (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * to-pairs {a:1,b:2,c:3}
  * 
- * @param {Object} object
- * @summary to-pairs :: {String: *} → [[String,*]]
  * 
  * @see {@link https://ramdajs.com/docs#toPairs}
 */
@@ -2310,7 +2008,6 @@ async toPairs (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * values {a:1,b:2,c:3}
  * 
- * @param {Object} object
  * @summary values :: {k: v} → [v]
  * 
  * @see {@link https://ramdajs.com/docs#values}
@@ -2322,25 +2019,9 @@ async values (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 
 
 /**
- * @function view
- * @memberof Basic
- * @example
- * TODO
- * @see {@link https://ramdajs.com/docs#view}
-*/
-@rpsAction({verbName:'view'})
-async view (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
-  return R.view.apply(this,params);
-}
-
-/**
  * @function where
  * @memberof Basic
- * @example
- * TODO
  * 
- * @param {Array} array
- * @param {Object} object
  * @summary where :: {String: (* → Boolean} → {String:*} → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#where}
@@ -2356,8 +2037,6 @@ async where (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * where-eq {a:1,b:2} {a:1,b:2}
  * 
- * @param {Object} object
- * @param {Object} object
  * @summary where-eq :: {String:*} → {String:*} → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#whereEq}
@@ -2372,6 +2051,10 @@ async whereEq (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function __
  * @memberof Basic
+ * @example
+ * log call (replace "{name}" (__) "Hello, {name}!") 'Alice'
+ * 
+ * @summary __
  * 
  * @see {@link https://ramdajs.com/docs/#module.exports}
 */
@@ -2385,9 +2068,10 @@ async underscore (ctx:RpsContext,opts:{}) : Promise<any> {
  * @function add-index
  * @memberof Basic
  * @example
- * TODO
+ * add-index map | as 'idx'
+ * log call $idx ($val,$idx)=> (identity `${$idx} - ${$val}`) ['f', 'o', 'o', 'b', 'a', 'r']
  * 
- * 
+ * @summary add-index :: ((a ... → b) ... → [a] → *) → (a ..., Int, [a] → b) ... → [a] → *)
  * @see {@link https://ramdajs.com/docs#addIndex}
 */
 @rpsAction({verbName:'add-index'})
@@ -2399,9 +2083,8 @@ async addIndex (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function always
  * @memberof Basic
  * @example
- * always 'Tee'
+ * log call (always 'Tee') 1
  * 
- * @param {*} any
  * @summary always :: a → (* → a)
  * 
  * @see {@link https://ramdajs.com/docs#always}
@@ -2415,7 +2098,9 @@ async always (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function ap
  * @memberof Basic
  * @example
- * TODO
+ * log call (ap (concat) (to-upper)) 'Ramda'
+ * 
+ * @summary ap :: [a → b] → [a] → [b]
  * 
  * @see {@link https://ramdajs.com/docs#ap}
 */
@@ -2428,10 +2113,8 @@ async ap (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function apply
  * @memberof Basic
  * @example
- * apply math-max [1,2,3,-99,42,6,7]
+ * log apply math-max [1,2,3,-99,42,6,7]
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary apply :: (*... → a) → [*] → a
  * 
  * @see {@link https://ramdajs.com/docs#apply}
@@ -2444,8 +2127,6 @@ async apply (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function apply-spec
  * @memberof Basic
- * @example
- * TODO
  * 
  * @see {@link https://ramdajs.com/docs#applySpec}
 */
@@ -2458,10 +2139,8 @@ async applySpec (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function apply-to
  * @memberof Basic
  * @example
- * apply-to math-max [1,2,3,-99,42,6,7]
+ * log apply-to 42 (add 1)
  * 
- * @param {Function} function
- * @param {Array} array
  * @summary apply-to :: a → (a → b) → b
  * 
  * @see {@link https://ramdajs.com/docs#applyTo}
@@ -2475,7 +2154,7 @@ async applyTo (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function ascend
  * @memberof Basic
  * @example
- * TODO
+ * log sort (ascend prop "name") [{'name':'z'},{'name':'a'}]
  * 
  * @summary ascend :: Ord b => (a → b) → a → a → Number
  * 
@@ -2492,9 +2171,6 @@ async ascend (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * call add 1 2
  * 
- * @param {Function} function
- * @param {...*} any
- * 
  * @summary call :: (*... → a), *... → a
  * 
  * @see {@link https://ramdajs.com/docs#call}
@@ -2508,9 +2184,8 @@ async call (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function comparator
  * @memberof Basic
  * @example
- * TODO
- * 
- * @param {Function} function
+ * comparator ($a,$b) => gt (prop 'age' $a) (prop 'age' $b) | as 'comp'
+ * log sort $comp [{age:50},{age:10},{age:13},{age:25}]
  * 
  * @summary comparator :: ((a,b) → Boolean) → ((a,b) → Number)
  * 
@@ -2525,7 +2200,9 @@ async comparator (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function compose
  * @memberof Basic
  * @example
- * TODO
+ * log call (compose (to-upper) (concat 'abc ')) 'introduce'
+ * 
+ * @summary compose :: ((y → z), (x → y), ..., (o → p), ((a, b, ..., n) → o)) → ((a, b, ..., n) → z)
  * 
  * @see {@link https://ramdajs.com/docs#compose}
 */
@@ -2539,8 +2216,10 @@ async compose (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function converge
  * @memberof Basic
  * @example
- * TODO
+ * assign 'average' converge (divide) [sum, length]
+ * log call $average [1, 2, 3, 4, 5, 6, 7]
  * 
+ * @summary converge :: ((x1, x2, ...) → z) → [((a, b, ...) → x1), ((a, b, ...) → x2), ...] → (a → b → ... → z)
  * 
  * @see {@link https://ramdajs.com/docs#converge}
 */
@@ -2553,9 +2232,9 @@ async converge (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function descend
  * @memberof Basic
  * @example
- * TODO
+ * log sort (descend prop "name") [{'name':'a'},{'name':'z'}]
  * 
- * @summary converge :: Ord b => (a → b) → a → a → Number
+ * @summary descend :: Ord b => (a → b) → a → a → Number
  * 
  * @see {@link https://ramdajs.com/docs#descend}
 */
@@ -2568,9 +2247,8 @@ async descend (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function empty
  * @memberof Basic
  * @example
- * empty 'abc'
+ * log empty 'abc'
  * 
- * @param {*} any
  * @summary empty :: a → a
  * 
  * @see {@link https://ramdajs.com/docs#empty}
@@ -2584,9 +2262,8 @@ async empty (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function f
  * @memberof Basic
  * @example
- * f
+ * log f
  * 
- * @param {any} any
  * @summary * → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#F}
@@ -2597,26 +2274,12 @@ async F (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 }
 
 /**
- * @function flip
- * @memberof Basic
- * @example
- * TODO
- * 
- * @see {@link https://ramdajs.com/docs#flip}
-*/
-@rpsAction({verbName:'flip'})
-async flip (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
-  return R.flip.apply(this,params);
-}
-
-/**
  * @function identity
  * @memberof Basic
  * @example
- * identity 1
+ * log identity 1
  * 
- * @param {any} any
- * @summary a → a
+ * @summary identity :: a → a
  * 
  * @see {@link https://ramdajs.com/docs#identity}
 */
@@ -2630,7 +2293,9 @@ async identity (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function juxt
  * @memberof Basic
  * @example
- * TODO
+ * log call (juxt [math-min, math-max]) 3 4 9 -3
+ * 
+ * @ juxt :: [(a, b, …, m) → n] → ((a, b, …, m) → [n])
  * 
  * @see {@link https://ramdajs.com/docs#juxt}
 */
@@ -2640,45 +2305,13 @@ async juxt (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 }
 
 /**
- * @function lift
- * @memberof Basic
- * @example
- * TODO
- * 
- * @summary (*... → *) → ([*]... → [*])
- * 
- * @see {@link https://ramdajs.com/docs#lift}
-*/
-@rpsAction({verbName:'lift'})
-async lift (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
-  return R.lift.apply(this,params);
-}
-
-/**
- * @function lift-n
- * @memberof Basic
- * @example
- * TODO
- * 
- * @summary Number → (*... → *) → ([*]... → [*])
- * 
- * @see {@link https://ramdajs.com/docs#liftN}
-*/
-@rpsAction({verbName:'lift-n'})
-async liftN (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
-  return R.liftN.apply(this,params);
-}
-
-/**
  * @function nth-arg
  * @memberof Basic
  * @example
- * nth 1 'a' 'b' 'c'
+ * nth-arg 1 'a' 'b' 'c'
  * 
- * @param {Number} number
- * @param {List} list
  * 
- * @summary Number → *...  → *
+ * @summary nth-arg :: Number → *...  → *
  * 
  * @see {@link https://ramdajs.com/docs#nthArg}
 */
@@ -2688,28 +2321,13 @@ async nthArg (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 }
 
 /**
- * @function o
- * @memberof Basic
- * @example
- * TODO
- * 
- * @see {@link https://ramdajs.com/docs#o}
-*/
-@rpsAction({verbName:'o'})
-async o (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
-  //@ts-ignore
-  return R.o.apply(this,params);
-}
-
-/**
  * @function of
  * @memberof Basic
  * @example
- * of 42
+ * log of 42
  * 
- * @param {*} any
  * 
- * @summary a → [a]
+ * @summary of :: a → [a]
  * 
  * @see {@link https://ramdajs.com/docs#of}
 */
@@ -2719,49 +2337,12 @@ async of (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 }
 
 /**
- * @function once
- * @memberof Basic
- * @example
- * TODO
- * 
- * @see {@link https://ramdajs.com/docs#once}
-*/
-@rpsAction({verbName:'once'})
-async once (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
-  return R.once.apply(this,params);
-}
-
-/**
- * @function partial
- * @memberof Basic
- * @example
- * TODO
- * 
- * @see {@link https://ramdajs.com/docs#partial}
-*/
-@rpsAction({verbName:'partial'})
-async partial (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
-  return R.partial.apply(this,params);
-}
-
-/**
- * @function partial-right
- * @memberof Basic
- * @example
- * TODO
- * 
- * @see {@link https://ramdajs.com/docs#partialRight}
-*/
-@rpsAction({verbName:'partial-right'})
-async partialRight (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
-  return R.partialRight.apply(this,params);
-}
-
-/**
  * @function pipe
  * @memberof Basic
  * @example
- * TODO
+ * log call (pipe (negate) (inc)) 3
+ * 
+ * @summary pipe :: (((a, b, …, n) → o), (o → p), …, (x → y), (y → z)) → ((a, b, …, n) → z)
  * 
  * @see {@link https://ramdajs.com/docs#pipe}
 */
@@ -2774,9 +2355,7 @@ async pipe (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function t
  * @memberof Basic
  * @example
- * t
- * 
- * @param {*} any
+ * log t
  * 
  * @summary * → Boolean
  * 
@@ -2790,12 +2369,8 @@ async t (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function tap
  * @memberof Basic
- * @example
- * TODO
  * 
- * @param {Functon} function
- * @param {Number} number
- * @summary (a → *) → a → a
+ * @summary tap :: (a → *) → a → a
  * @see {@link https://ramdajs.com/docs#tap}
 */
 @rpsAction({verbName:'tap'})
@@ -2807,7 +2382,9 @@ async tap (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function try-catch
  * @memberof Basic
  * @example
- * TODO
+ * log call (try-catch (prop 'x') (f)) {x: true}
+ * 
+ * @summary try-catch :: (…x → a) → ((e, …x) → a) → (…x → a)
  * 
  * @see {@link https://ramdajs.com/docs#tryCatch}
 */
@@ -2821,7 +2398,10 @@ async tryCatch (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function use-with
  * @memberof Basic
  * @example
- * TODO
+ * assign 'useWith' use-with (pow) [identity, identity]
+ * log call $useWith 3 4
+ * 
+ * @summary use-with :: ((x1, x2, …) → z) → [(a → x1), (b → x2), …] → (a → b → … → z)
  * 
  * @see {@link https://ramdajs.com/docs#useWith}
 */
@@ -2830,6 +2410,20 @@ async useWith (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
   return R.useWith.apply(this,params);
 }
 
+/**
+ * @function unapply
+ * @memberof Basic
+ * @example
+ * log unapply (stringify) 1 2 3
+ * 
+ * @summary unapply :: ([*...] → a) → (*... → a)
+ * 
+ * @see {@link https://ramdajs.com/docs#unapply}
+*/
+@rpsAction({verbName:'unapply'})
+async unapply (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
+  return R.apply.unapply(this,params);
+}
 
 /**************************** Ramda (Relation) ***********************************/
 
@@ -2837,13 +2431,10 @@ async useWith (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function clamp
  * @memberof Basic
  * @example
- * clamp 1 10 15
+ * log clamp 1 10 15
  * 
- * @param {Number} number
- * @param {Number} number
- * @param {Number} number
  * 
- * @summary Ord a => a → a → a → a
+ * @summary clamp :: Ord a => a → a → a → a
  * 
  * @see {@link https://ramdajs.com/docs#clamp}
 */
@@ -2856,12 +2447,9 @@ async clamp (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function count-by
  * @memberof Basic
  * @example
- * count-by floor [1.0,1.1,1.2,2.3,2.5]
+ * log count-by (floor) [1.0,1.1,1.2,2.3,2.5]
  * 
- * @param {Function} function
- * @param {Array} array
- * 
- * @summary (a → String) → [a] → {*}
+ * @summary count-by :: (a → String) → [a] → {*}
  * 
  * @see {@link https://ramdajs.com/docs#countBy}
 */
@@ -2874,12 +2462,9 @@ async countBy (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function difference
  * @memberof Basic
  * @example
- * difference [1,2,3,4] [3,4,5,6]
+ * log difference [1,2,3,4] [3,4,5,6]
  * 
- * @param {Array} array
- * @param {Array} array
- * 
- * @summary [*] → [*] → [*]
+ * @summary difference :: [*] → [*] → [*]
  * 
  * @see {@link https://ramdajs.com/docs#difference}
 */
@@ -2892,13 +2477,10 @@ async difference (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function difference-with
  * @memberof Basic
  * @example
- * TODO
+ * assign 'cmp' eq-props 'a'
+ * log difference-with $cmp [{a: 1}, {a: 2}, {a: 3}] [{a: 3}, {a: 4}]
  * 
- * @param {Function} function
- * @param {Array} array
- * @param {Array} array
- * 
- * @summary ((a,a) → Boolean) → [a] → [a] → [a]
+ * @summary difference-with ((a,a) → Boolean) → [a] → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#differenceWith}
 */
@@ -2911,11 +2493,7 @@ async differenceWith (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function eq-by
  * @memberof Basic
  * @example
- * eq-by (abs) 5 -5
- * 
- * @param {Function} function
- * @param {*} any
- * @param {*} any
+ * log eq-by (abs) 5 -5
  * 
  * @summary (a → b) → a → a → Boolean
  * 
@@ -2932,10 +2510,7 @@ async eqBy (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * equals 5 5
  * 
- * @param {*} any
- * @param {*} any
- * 
- * @summary a → b → Boolean
+ * @summary equals :: a → b → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#equals}
 */
@@ -2948,10 +2523,8 @@ async equals (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function gt
  * @memberof Basic
  * @example
- * gt 2 1
+ * log gt 2 1
  * 
- * @param {*} any
- * @param {*} any
  * 
  * @summary Ord a => a → a → Boolean
  * 
@@ -2966,10 +2539,7 @@ async gt (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function gte
  * @memberof Basic
  * @example
- * gte 2 2
- * 
- * @param {*} any
- * @param {*} any
+ * log gte 2 2
  * 
  * @summary Ord a => a → a → Boolean
  * 
@@ -2984,12 +2554,10 @@ async gte (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function identical
  * @memberof Basic
  * @example
- * identical 1 1
+ * log identical 1 1
  * 
- * @param {*} any
- * @param {*} any
  * 
- * @summary a → a → Boolean
+ * @summary identical :: a → a → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#identical}
 */
@@ -3002,13 +2570,15 @@ async identical (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function inner-join
  * @memberof Basic
  * @example
- * TODO
+ * assign 'idMatch' ($record, $id) => equals $id prop 'id' $record 
+ * log inner-join $idMatch [
+ *    {id: 824, name: 'Richie Furay'},
+ *     {id: 956, name: 'Dewey Martin'},
+ *     {id: 313, name: 'Bruce Palmer'},
+ *     {id: 456, name: 'Stephen Stills'},
+ *     {id: 177, name: 'Neil Young'}] [177, 456, 999]
  * 
- * @param {Function} function
- * @param {Array} array
- * @param {Array} array
- * 
- * @summary ((a,b) → Boolean) → [a] → [b] → [a]
+ * @summary inner-join :: ((a,b) → Boolean) → [a] → [b] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#innerJoin}
 */
@@ -3022,12 +2592,9 @@ async innerJoin (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function intersection
  * @memberof Basic
  * @example
- * intersection [1,2,3,4] [3,4,5,6]
+ * log intersection [1,2,3,4] [3,4,5,6]
  * 
- * @param {Array} array
- * @param {Array} array
- * 
- * @summary [*] → [*] → [*]
+ * @summary intersection :: [ * ] → [ * ] → [ * ]
  * 
  * @see {@link https://ramdajs.com/docs#intersection}
 */
@@ -3040,12 +2607,10 @@ async intersection (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function lt
  * @memberof Basic
  * @example
- * lt 2 1
+ * log lt 2 1
  * 
- * @param {*} any
- * @param {*} any
  * 
- * @summary Ord a => a → a → Boolean
+ * @summary lt :: Ord a => a → a → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#lt}
 */
@@ -3060,10 +2625,8 @@ async lt (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * lte 2 2
  * 
- * @param {*} any
- * @param {*} any
  * 
- * @summary Ord a => a → a → Boolean
+ * @summary lte :: Ord a => a → a → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#lte}
 */
@@ -3094,13 +2657,9 @@ async max (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function max-by
  * @memberof Basic
  * @example
- * TODO
+ * log max-by (abs) -3 2 -1
  * 
- * @param {Function} function
- * @param {*} any
- * @param {*} any
- * 
- * @summary Ord a => (a → b) → a → a → a
+ * @summary max-by :: Ord a => (a → b) → a → a → a
  * 
  * @see {@link https://ramdajs.com/docs#maxBy}
 */
@@ -3113,12 +2672,9 @@ async maxBy (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function min
  * @memberof Basic
  * @example
- * min 10 5
+ * log min 10 5
  * 
- * @param {*} any
- * @param {*} any
- * 
- * @summary Ord a => a → a → a
+ * @summary min :: Ord a => a → a → a
  * 
  * @see {@link https://ramdajs.com/docs#min}
 */
@@ -3128,16 +2684,12 @@ async min (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 }
 
  /**
- * @function minBy
+ * @function min-by
  * @memberof Basic
  * @example
- * TODO
+ * log min-by (abs) -3 2 -1
  * 
- * @param {Function} function
- * @param {*} any
- * @param {*} any
- * 
- * @summary Ord a => (a → b) → a → a → a
+ * @summary min-by :: Ord a => (a → b) → a → a → a
  * 
  * @see {@link https://ramdajs.com/docs#minBy}
 */
@@ -3149,10 +2701,8 @@ async minBy (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  /**
  * @function path-eq
  * @memberof Basic
- * @example
- * TODO
  * 
- * @summary [Idx] → a → {a} → Boolean
+ * @summary path-eq :: [Idx] → a → {a} → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#pathEq}
 */
@@ -3165,9 +2715,9 @@ async pathEq (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function prop-eq
  * @memberof Basic
  * @example
- * TODO
+ * log prop-eq 'a' 2 {'a': 2}
  * 
- * @summary String → a → Object → Boolean
+ * @summary prop-eq :: String → a → Object → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#propEq}
 */
@@ -3180,9 +2730,9 @@ async propEq (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function sort-by
  * @memberof Basic
  * @example
- * TODO
+ * log sort-by (prop 0) [[-1,1] , [-2,2] , [-3,3]]
  * 
- * @summary Ord b => (a → b) → [a] → [a]
+ * @summary sort-by :: Ord b => (a → b) → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#sortBy}
 */
@@ -3194,10 +2744,8 @@ async sortBy (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  /**
  * @function sort-with
  * @memberof Basic
- * @example
- * TODO
  * 
- * @summary [(a,a) → Number] → [a] → [a]
+ * @summary sort-with :: [(a,a) → Number] → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#sortWith}
 */
@@ -3212,7 +2760,7 @@ async sortWith (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * symmetric-difference [1,2,3,4] [3,4,5,6,7]
  * 
- * @summary [*] → [*] → [*]
+ * @summary symmetric-difference :: [*] → [*] → [*]
  * 
  * @see {@link https://ramdajs.com/docs#symmetricDifference}
 */
@@ -3224,10 +2772,8 @@ async symmetricDifference (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<an
  /**
  * @function symmetric-difference-with
  * @memberof Basic
- * @example
- * TODO
  * 
- * @summary ((a,a) → Boolean) → [a] → [a] → [a]
+ * @summary symmetric-difference-with :: ((a,a) → Boolean) → [a] → [a] → [a]
  * 
  * @see {@link https://ramdajs.com/docs#symmetricDifferenceWith}
 */
@@ -3240,12 +2786,9 @@ async symmetricDifferenceWith (ctx:RpsContext,opts:{}, ...params:any[]) : Promis
  * @function union
  * @memberof Basic
  * @example
- * union [1,2,3] [2,3,4]
+ * log union [1,2,3] [2,3,4]
  * 
- * @param {Array} array
- * @param {Array} array
- * 
- * @summary [*] → [*] → [*]
+ * @summary union :: [*] → [*] → [*]
  * 
  * @see {@link https://ramdajs.com/docs#union}
 */
@@ -3260,10 +2803,8 @@ async union (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @example
  * union-with (eq-by prop 'a') [{a:1}] [{a:1}]
  * 
- * @param {Array} array
- * @param {Array} array
  * 
- * @summary ((a,a) → Boolean) → [*] → [*] → [*]
+ * @summary union-with :: ((a,a) → Boolean) → [*] → [*] → [*]
  * 
  * @see {@link https://ramdajs.com/docs#unionWith}
 */
@@ -3279,9 +2820,9 @@ async unionWith (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function all-pass
  * @memberof Basic
  * @example
- * TODO
+ * log call ( all-pass [ (prop-eq 'name' 'ABC'),(prop-eq 'type' 'org') ] ) {name:'ABC','type':'org'}
  * 
- * @summary [(*...) → Boolean] → (*... → Boolean)
+ * @summary all-pass :: [(*...) → Boolean] → (*... → Boolean)
  * 
  * @see {@link https://ramdajs.com/docs#allPass}
 */
@@ -3294,12 +2835,10 @@ async allPass (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function and
  * @memberof Basic
  * @example
- * and true false
+ * log and true false
  * 
- * @param {*} any
- * @param {*} any
  * 
- * @summary a → b → a | b
+ * @summary and :: a → b → a | b
  * 
  * @see {@link https://ramdajs.com/docs#and}
 */
@@ -3312,7 +2851,9 @@ async and (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function any-pass
  * @memberof Basic
  * @example
- * TODO
+ * log call ( any-pass [ (prop-eq 'name' 'ABC'),(prop-eq 'type' 'org') ] ) {name:'K','type':'org'}
+ * 
+ * @summary any-pass :: [(*... → Boolean)] → (*... → Boolean)
  * 
  * @see {@link https://ramdajs.com/docs#anyPass}
 */
@@ -3325,7 +2866,9 @@ async anyPass (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function both
  * @memberof Basic
  * @example
- * TODO
+ * log call ( both (gt (__) 10) (lt (__) 20) ) 15
+ * 
+ * @summary both :: (*... → Boolean) → (*... → Boolean) → (*... → Boolean)
  * 
  * @see {@link https://ramdajs.com/docs#both}
 */
@@ -3338,7 +2881,9 @@ async both (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function complement
  * @memberof Basic
  * @example
- * TODO
+ * log call (complement (is-nil)) 1
+ * 
+ * @summary complement :: (*... → *) → (*... → Boolean)
  * 
  * @see {@link https://ramdajs.com/docs#complement}
 */
@@ -3350,8 +2895,6 @@ async complement (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function cond
  * @memberof Basic
- * @example
- * TODO
  * 
  * @see {@link https://ramdajs.com/docs#cond}
 */
@@ -3364,7 +2907,9 @@ async cond (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function default-to
  * @memberof Basic
  * @example
- * TODO
+ * log default-to 10 null
+ * 
+ * @summary a → b → a | b
  * 
  * @see {@link https://ramdajs.com/docs#defaultTo}
 */
@@ -3376,8 +2921,8 @@ async defaultTo (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function either
  * @memberof Basic
- * @example
- * TODO
+ * 
+ * @summary (*... → Boolean) → (*... → Boolean) → (*... → Boolean)
  * 
  * @see {@link https://ramdajs.com/docs#either}
 */
@@ -3390,7 +2935,11 @@ async either (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function if-else
  * @memberof Basic
  * @example
- * TODO
+ * assign 'ifElse' if-else (has 'count') (over (lens-prop 'count') inc) (assoc 'count' 1)
+ * log call $ifElse {}
+ * log call $ifElse {'count':4}
+ * 
+ * @summary if-else :: (*… → Boolean) → (*… → *) → (*… → *) → (*… → *)
  * 
  * @see {@link https://ramdajs.com/docs#ifElse}
 */
@@ -3403,7 +2952,9 @@ async ifElse (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function is-empty
  * @memberof Basic
  * @example
- * TODO
+ * log is-empty []
+ * 
+ * @summary is-empty :: a → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#isEmpty}
 */
@@ -3416,7 +2967,9 @@ async isEmpty (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function not
  * @memberof Basic
  * @example
- * TODO
+ * log not 1
+ * 
+ * @summary not :: * → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#not}
 */
@@ -3429,7 +2982,9 @@ async not (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function or
  * @memberof Basic
  * @example
- * TODO
+ * log or true false
+ * 
+ * @summary or :: a → b → a | b
  * 
  * @see {@link https://ramdajs.com/docs#or}
 */
@@ -3441,8 +2996,10 @@ async or (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function path-satisfies
  * @memberof Basic
- * @example
- * TODO
+ * 
+ * @summary path-satisfies ::
+ * (a → Boolean) → [Idx] → {a} → Boolean
+ * Idx = String | Int
  * 
  * @see {@link https://ramdajs.com/docs#pathSatisfies}
 */
@@ -3454,8 +3011,8 @@ async pathSatisfies (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 /**
  * @function prop-satisfies
  * @memberof Basic
- * @example
- * TODO
+ * 
+ * @summary prop-satisfies :: (a → Boolean) → String → {String: a} → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#propSatisfies}
 */
@@ -3468,7 +3025,9 @@ async propSatisfies (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function unless
  * @memberof Basic
  * @example
- * TODO
+ * log call (unless (is-nil) (inc)) 1
+ * 
+ * @summary unless :: (a → Boolean) → (a → a) → a → a
  * 
  * @see {@link https://ramdajs.com/docs#unless}
 */
@@ -3481,7 +3040,9 @@ async unless (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function until
  * @memberof Basic
  * @example
- * TODO
+ * log call (until (gt (__) 100) (multiply 2) ) 1
+ * 
+ * @summary until :: (a → Boolean) → (a → a) → a → a
  * 
  * @see {@link https://ramdajs.com/docs#until}
 */
@@ -3494,7 +3055,10 @@ async until (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function when
  * @memberof Basic
  * @example
- * TODO
+ * assign 'truncate' when (prop-satisfies (gt __ 10) 'length') (pipe (take 10) (append '...') (join '') )
+ * log call $truncate '0123456789ABC'
+ * 
+ * @summary when :: (a → Boolean) → (a → a) → a → a
  * 
  * @see {@link https://ramdajs.com/docs#when}
 */
@@ -3509,7 +3073,9 @@ async when (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function trim
  * @memberof Basic
  * @example
- * TODO
+ * log trim " hello   "
+ * 
+ * @summary String → String
  * 
  * @see {@link https://ramdajs.com/docs#trim}
 */
@@ -3522,7 +3088,9 @@ async trim (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function match
  * @memberof Basic
  * @example
- * TODO
+ * log match (regexp "a") "banana"
+ * 
+ * @summary match :: RegExp → String → [String | Undefined]
  * 
  * @see {@link https://ramdajs.com/docs#match}
 */
@@ -3535,7 +3103,9 @@ async match (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function replace
  * @memberof Basic
  * @example
- * TODO
+ * log replace "a" "b" "banana"
+ * 
+ * @summary :: replace :: RegExp|String → String → String → String
  * 
  * @see {@link https://ramdajs.com/docs#replace}
 */
@@ -3548,7 +3118,9 @@ async replace (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function split
  * @memberof Basic
  * @example
- * TODO
+ * log split ',' "hello, world, hi"
+ * 
+ * @summary split :: (String | RegExp) → String → [String]
  * 
  * @see {@link https://ramdajs.com/docs#split}
 */
@@ -3561,7 +3133,9 @@ async split (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function test
  * @memberof Basic
  * @example
- * TODO
+ * log test (regexp "p") "banana"
+ * 
+ * @summary test :: RegExp → String → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#test}
 */
@@ -3574,7 +3148,9 @@ async test (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function to-lower
  * @memberof Basic
  * @example
- * TODO
+ * log to-lower "ABZ"
+ * 
+ * @summary to-lower :: String → String
  * 
  * @see {@link https://ramdajs.com/docs#toLower}
 */
@@ -3587,7 +3163,9 @@ async toLower (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function to-string
  * @memberof Basic
  * @example
- * TODO
+ * log to-string 100
+ * 
+ * @summary to-string :: * → String
  * 
  * @see {@link https://ramdajs.com/docs#toString}
 */
@@ -3597,10 +3175,13 @@ async toString (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
 }
 
  /**
+  * 
  * @function to-upper
  * @memberof Basic
  * @example
- * TODO
+ * log to-upper "abc"
+ * 
+ * @summary to-upper :: * → String
  * 
  * @see {@link https://ramdajs.com/docs#toUpper}
 */
@@ -3615,8 +3196,9 @@ async toUpper (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function add
  * @memberof Basic
  * @example
- * TODO
+ * log add 3 4
  * 
+ * @summary add :: Number → Number → Number 
  * @see {@link https://ramdajs.com/docs#add}
 */
 @rpsAction({verbName:'add'})
@@ -3627,8 +3209,10 @@ async add (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  /**
  * @function dec
  * @memberof Basic
+ * @example 
+ * log dec 42
  * 
- * @param {Array} params
+ * @summary dec :: Number → Number
  * 
  * @see {@link https://ramdajs.com/docs#dec}
 */
@@ -3641,7 +3225,9 @@ async dec (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function divide
  * @memberof Basic
  * @example
- * TODO
+ * log divide 6 2
+ * 
+ * @summary divide :: Number → Number → Number
  * 
  * @see {@link https://ramdajs.com/docs#divide}
 */
@@ -3654,7 +3240,9 @@ async divide (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function inc
  * @memberof Basic
  * @example
- * TODO
+ * log inc 41
+ * 
+ * @summary inc :: Number → Number
  * 
  * @see {@link https://ramdajs.com/docs#inc}
 */
@@ -3667,7 +3255,9 @@ async inc (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function math-mod
  * @memberof Basic
  * @example
- * TODO
+ * log math-mod 17 5
+ * 
+ * @summary math-mod :: Number → Number → Number
  * 
  * @see {@link https://ramdajs.com/docs#mathMod}
 */
@@ -3679,8 +3269,6 @@ async mathMod (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  /**
  * @function mean
  * @memberof Basic
- * @example
- * TODO
  * 
  * @see {@link https://ramdajs.com/docs#mean}
 */
@@ -3692,8 +3280,6 @@ async mean (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  /**
  * @function median
  * @memberof Basic
- * @example
- * TODO
  * 
  * @see {@link https://ramdajs.com/docs#median}
 */
@@ -3706,7 +3292,9 @@ async median (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function modulo
  * @memberof Basic
  * @example
- * TODO
+ * log modulo 17 5
+ * 
+ * @summary modulo :: Number → Number → Number
  * 
  * @see {@link https://ramdajs.com/docs#modulo}
 */
@@ -3719,7 +3307,9 @@ async modulo (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function multiply
  * @memberof Basic
  * @example
- * TODO
+ * log multiply 4 3
+ * 
+ * @summary multiply :: Number → Number → Number
  * 
  * @see {@link https://ramdajs.com/docs#multiply}
 */
@@ -3732,7 +3322,9 @@ async multiply (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function negate
  * @memberof Basic
  * @example
- * TODO
+ * log negate -42
+ * 
+ * @summary negate :: Number → Number
  * 
  * @see {@link https://ramdajs.com/docs#negate}
 */
@@ -3745,7 +3337,9 @@ async negate (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function product
  * @memberof Basic
  * @example
- * TODO
+ * log product [2,3]
+ * 
+ * @summary product :: [Number] → Number
  * 
  * @see {@link https://ramdajs.com/docs#product}
 */
@@ -3758,7 +3352,9 @@ async product (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function subtract
  * @memberof Basic
  * @example
- * TODO
+ * log subtract 10 4
+ * 
+ * @summary subtract :: Number → Number → Number
  * 
  * @see {@link https://ramdajs.com/docs#subtract}
 */
@@ -3771,7 +3367,9 @@ async subtract (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function sum
  * @memberof Basic
  * @example
- * TODO
+ * log sum [3 5]
+ * 
+ * @summary sum :: [Number] → Number
  * 
  * @see {@link https://ramdajs.com/docs#sum}
 */
@@ -3786,7 +3384,9 @@ async sum (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function is
  * @memberof Basic
  * @example
- * TODO
+ * log to-string is Array [1,2,3]
+ * 
+ * @summary is :: (* → {*}) → a → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#is}
 */
@@ -3799,7 +3399,9 @@ async is (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function is-nil
  * @memberof Basic
  * @example
- * TODO
+ * log is-nil []
+ * 
+ * @summary is-nil :: * → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#isNil}
 */
@@ -3812,7 +3414,9 @@ async isNil (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function prop-is
  * @memberof Basic
  * @example
- * TODO
+ * log to-string prop-is Number 'x' {x:1}
+ * 
+ * @summary prop-is :: Type → String → Object → Boolean
  * 
  * @see {@link https://ramdajs.com/docs#propIs}
 */
@@ -3825,7 +3429,9 @@ async propIs (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  * @function type
  * @memberof Basic
  * @example
- * TODO
+ * log type 1
+ * 
+ * @summary type :: (* → {*}) → String
  * 
  * @see {@link https://ramdajs.com/docs#type}
 */
@@ -3839,8 +3445,6 @@ async type (ctx:RpsContext,opts:{}, ...params:any[]) : Promise<any> {
  /**
  * @function r
  * @memberof Basic
- * @example
- * TODO
  * 
 */
 @rpsAction({verbName:'r'})
@@ -3853,6 +3457,8 @@ async r (ctx:RpsContext,opts:{}, functionName:string) : Promise<any> {
  * @memberof Basic
  * 
  * @param {RegExp} regexp regular expression
+ * 
+ * @summary regexp
  * 
 */
 @rpsAction({verbName:'regexp'})
