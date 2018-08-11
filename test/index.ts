@@ -6,6 +6,16 @@ import { RpsContext } from 'rpscript-interface';
 
 m.describe('Basic', () => {
 
+  m.it('should print simple logging', async function () {
+    let context = new RpsContext;
+    let basic = new RPSBasic;
+
+    let res1 = await basic.print(context,{},"Hello");
+    expect(res1).to.be.equals('Hello');
+    let res2 = await basic.print(context,{},"Hello","World");
+    expect(res2).to.be.deep.equals(['Hello','World']);
+  });
+
   m.it('should pop up hello world notification', async function () {
     let context = new RpsContext;
     let basic = new RPSBasic;

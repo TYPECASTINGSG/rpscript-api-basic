@@ -17,13 +17,13 @@ export default class RPSBasic {
  * @memberof Basic
  * @example
  * ;print 'Hello'
- * log 'Hello'
+ * log 'Hello' 'World'
  * ;print 'Hello' again
  * log $RESULT
  * 
- * @param {string} text information to be printed out on the terminal.
+ * @param {List} text information to be printed out on the terminal.
  * @returns {*}  Similar to text input.
- * @summary log :: a → a
+ * @summary log :: ...a → a
  * @description
  * This is a wrapper for javascript console.log function.
  * 
@@ -31,10 +31,12 @@ export default class RPSBasic {
  * 
 */
   @rpsAction({verbName:'log'})
-  async print(ctx:RpsContext,opts:{}, text:any) : Promise<any>{
+  async print(ctx:RpsContext,opts:{}, ...text:any[]) : Promise<any>{
     if(text){
-      console.log(text);
-      return text;
+      console.log(R.join('\n',text));
+
+      if(text.length==1) return text[0];
+      else return text;
     }
     else {
       return console.log;
