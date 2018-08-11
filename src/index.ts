@@ -32,7 +32,7 @@ export default class RPSBasic {
 */
   @rpsAction({verbName:'log'})
   async print(ctx:RpsContext,opts:{}, ...text:any[]) : Promise<any>{
-    if(text){
+    if(text && text.length > 0){
       console.log(R.join('\n',text));
 
       if(text.length==1) return text[0];
